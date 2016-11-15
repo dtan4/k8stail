@@ -1,5 +1,5 @@
-hash: 428eb03cbcabc5765136d41959406b0a2d3685ac7cfce04bc2551e59515316d0
-updated: 2016-11-15T15:33:03.990253688+09:00
+hash: 5ae365258964ed012d958dfdb37ebff7ae468169ea7a9e001f79e2aa53786518
+updated: 2016-11-15T17:52:18.180878082+09:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -36,6 +36,8 @@ imports:
   subpackages:
   - log
   - swagger
+- name: github.com/fatih/color
+  version: dea9d3a26a087187530244679c1cfb3a42937794
 - name: github.com/ghodss/yaml
   version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
 - name: github.com/go-openapi/jsonpointer

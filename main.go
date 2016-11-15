@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/fatih/color"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/pkg/api/v1"
 	"k8s.io/client-go/tools/clientcmd"
@@ -62,13 +63,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Namespace: %s\n", namespace)
-	fmt.Printf("Labels:    %s\n", labels)
-	fmt.Println("======")
+	c := color.New(color.Bold)
+
+	c.Printf("Namespace: %s\n", namespace)
+	c.Printf("Labels:    %s\n", labels)
+	c.Println("======")
 
 	var wg sync.WaitGroup
 
 	activePods := map[string]bool{}
+	green := color.New(color.FgGreen, color.Bold, color.Underline)
+	// red := color.New(color.FgRed, color.Bold, color.Underline)
 
 	for {
 		pods, err := clientset.Core().Pods(namespace).List(v1.ListOptions{
@@ -85,7 +90,7 @@ func main() {
 			}
 
 			activePods[pod.Name] = true
-			printLog(fmt.Sprintf("POD %s DETECTED", pod.Name))
+			printLogWithColor(green, fmt.Sprintf("Pod %s has detected", pod.Name))
 			sinceSeconds := int64(math.Ceil(float64(logSecondsOffset) / float64(time.Second)))
 
 			wg.Add(1)
@@ -123,4 +128,11 @@ func printLog(line string) {
 	defer m.Unlock()
 
 	fmt.Println(line)
+}
+
+func printLogWithColor(c *color.Color, line string) {
+	m.Lock()
+	defer m.Unlock()
+
+	c.Println(line)
 }
