@@ -18,6 +18,7 @@ const (
 func main() {
 	var (
 		kubeconfig string
+		labels     string
 		namespace  string
 	)
 
@@ -34,6 +35,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	for 0 < flags.NArg() {
+		labels = flags.Args()[0]
+		flags.Parse(flags.Args()[1:])
+	}
+
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -47,9 +53,13 @@ func main() {
 	}
 
 	fmt.Printf("Namespace: %s\n", namespace)
+	fmt.Printf("Labels:    %s\n", labels)
+	fmt.Println("======")
 
 	for {
-		pods, err := clientset.Core().Pods(namespace).List(v1.ListOptions{})
+		pods, err := clientset.Core().Pods(namespace).List(v1.ListOptions{
+			LabelSelector: labels,
+		})
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
