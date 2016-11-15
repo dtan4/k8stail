@@ -20,10 +20,6 @@ const (
 	logSecondsOffset = 10
 )
 
-var (
-	m sync.Mutex
-)
-
 func main() {
 	var (
 		kubeconfig string
@@ -69,11 +65,12 @@ func main() {
 	c.Printf("Labels:    %s\n", labels)
 	c.Println("======")
 
+	var mm sync.Mutex
 	var wg sync.WaitGroup
 
 	activePods := map[string]bool{}
 	green := color.New(color.FgGreen, color.Bold, color.Underline)
-	// red := color.New(color.FgRed, color.Bold, color.Underline)
+	red := color.New(color.FgRed, color.Bold, color.Underline)
 
 	for {
 		pods, err := clientset.Core().Pods(namespace).List(v1.ListOptions{
@@ -116,6 +113,11 @@ func main() {
 				for sc.Scan() {
 					printLog(fmt.Sprintf("[%s] %s", p.Name, sc.Text()))
 				}
+
+				mm.Lock()
+				defer mm.Unlock()
+				delete(activePods, p.Name)
+				printLogWithColor(red, fmt.Sprintf("Pod %s has been deleted", p.Name))
 			}(pod)
 		}
 
@@ -126,6 +128,8 @@ func main() {
 		}
 	}
 }
+
+var m sync.Mutex
 
 func printLog(line string) {
 	m.Lock()
