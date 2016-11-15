@@ -2,6 +2,8 @@
 
 `tail -f` experience for Kubernetes Pods
 
+As you know, `kubectl logs` can stream only ONE pod at the same time. `k8stail` enables you to watch __log streams of ALL pods__ in the specified namespace or labels in real time, like `tail -f`.
+
 ## Installation
 
 ### Using Homebrew (OS X only)
@@ -23,7 +25,7 @@ $ make install
 
 ## Usage
 
-`k8stail` enables you to watch __log streams of ALL pods__ in the specified namespace or labels in real time, like `tail -f`.
+Logs of all Pods in the specified namespace are streaming. When new Pod is added, logs of the Pod also appears.
 
 ```bash
 $ bin/k8stail -namespace awesome-app
