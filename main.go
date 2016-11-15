@@ -16,18 +16,22 @@ func main() {
 
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
-		panic(err.Error())
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
-	// creates the clientset
+
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		panic(err.Error())
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 	for {
 		pods, err := clientset.Core().Pods("").List(v1.ListOptions{})
 		if err != nil {
-			panic(err.Error())
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
 		}
+
 		fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
 		time.Sleep(10 * time.Second)
 	}
