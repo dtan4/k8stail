@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math"
 	"os"
-	"strings"
 	"sync"
 	"time"
 
@@ -69,8 +68,9 @@ func main() {
 	var wg sync.WaitGroup
 
 	runningPods := NewPodList()
-	green := color.New(color.FgGreen, color.Bold, color.Underline)
-	red := color.New(color.FgRed, color.Bold, color.Underline)
+	greenBold := color.New(color.FgGreen, color.Bold)
+	redBold := color.New(color.FgRed, color.Bold)
+	logger := NewLogger()
 
 	for {
 		pods, err := clientset.Core().Pods(namespace).List(v1.ListOptions{
@@ -91,7 +91,7 @@ func main() {
 			}
 
 			runningPods.Add(pod.Name)
-			printLogWithColor(green, fmt.Sprintf("Pod %s has detected", pod.Name))
+			logger.PrintColorizedLog(greenBold, fmt.Sprintf("Pod %s has detected", pod.Name))
 			sinceSeconds := int64(math.Ceil(float64(logSecondsOffset) / float64(time.Second)))
 
 			wg.Add(1)
@@ -111,10 +111,10 @@ func main() {
 				sc := bufio.NewScanner(rs)
 
 				for sc.Scan() {
-					printPodLog(p.Name, sc.Text(), timestamps)
+					logger.PrintPodLog(p.Name, sc.Text(), timestamps)
 				}
 
-				printLogWithColor(red, fmt.Sprintf("Pod %s has been deleted", p.Name))
+				logger.PrintColorizedLog(redBold, fmt.Sprintf("Pod %s has been deleted", p.Name))
 			}(pod)
 		}
 
@@ -124,34 +124,4 @@ func main() {
 	}
 
 	wg.Wait()
-}
-
-var m sync.Mutex
-var boldFunc = color.New(color.Bold).SprintFunc()
-var yellowFunc = color.New(color.FgYellow).SprintFunc()
-
-func printLog(line string) {
-	m.Lock()
-	defer m.Unlock()
-
-	fmt.Println(line)
-}
-
-func printPodLog(podName, line string, timestamps bool) {
-	m.Lock()
-	defer m.Unlock()
-
-	if timestamps {
-		ss := strings.SplitN(line, " ", 2)
-		fmt.Printf("[%s] %s   %s %s \n", boldFunc(podName), yellowFunc(ss[0]), boldFunc("|"), ss[1])
-	} else {
-		fmt.Printf("[%s]   %s %s\n", boldFunc(podName), boldFunc("|"), line)
-	}
-}
-
-func printLogWithColor(c *color.Color, line string) {
-	m.Lock()
-	defer m.Unlock()
-
-	c.Println(line)
 }
