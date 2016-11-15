@@ -28,6 +28,7 @@ func main() {
 		kubeconfig string
 		labels     string
 		namespace  string
+		timestamps bool
 	)
 
 	flags := flag.NewFlagSet("k8stail", flag.ExitOnError)
@@ -37,6 +38,7 @@ func main() {
 
 	flags.StringVar(&kubeconfig, "kubeconfig", clientcmd.RecommendedHomeFile, fmt.Sprintf("Path of kubeconfig (Default: %s)", clientcmd.RecommendedHomeFile))
 	flags.StringVar(&namespace, "namespace", v1.NamespaceDefault, fmt.Sprintf("Kubernetes namespace (Default: %s)", v1.NamespaceDefault))
+	flags.BoolVar(&timestamps, "timestamps", false, "Include timestamps on each line (default: false)")
 
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -93,6 +95,7 @@ func main() {
 				rs, err := clientset.Core().Pods(namespace).GetLogs(p.Name, &v1.PodLogOptions{
 					Follow:       true,
 					SinceSeconds: &sinceSeconds,
+					Timestamps:   timestamps,
 				}).Stream()
 				if err != nil {
 					fmt.Fprintln(os.Stderr, err)
