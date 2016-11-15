@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -110,7 +111,7 @@ func main() {
 				sc := bufio.NewScanner(rs)
 
 				for sc.Scan() {
-					printLog(fmt.Sprintf("[%s] %s", p.Name, sc.Text()))
+					printPodLog(p.Name, sc.Text(), timestamps)
 				}
 
 				printLogWithColor(red, fmt.Sprintf("Pod %s has been deleted", p.Name))
@@ -126,12 +127,26 @@ func main() {
 }
 
 var m sync.Mutex
+var boldFunc = color.New(color.Bold).SprintFunc()
+var yellowFunc = color.New(color.FgYellow).SprintFunc()
 
 func printLog(line string) {
 	m.Lock()
 	defer m.Unlock()
 
 	fmt.Println(line)
+}
+
+func printPodLog(podName, line string, timestamps bool) {
+	m.Lock()
+	defer m.Unlock()
+
+	if timestamps {
+		ss := strings.SplitN(line, " ", 2)
+		fmt.Printf("[%s] %s   %s %s \n", boldFunc(podName), yellowFunc(ss[0]), boldFunc("|"), ss[1])
+	} else {
+		fmt.Printf("[%s]   %s %s\n", boldFunc(podName), boldFunc("|"), line)
+	}
 }
 
 func printLogWithColor(c *color.Color, line string) {
