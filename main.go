@@ -113,17 +113,16 @@ func main() {
 					printLog(fmt.Sprintf("[%s] %s", p.Name, sc.Text()))
 				}
 
-				runningPods.Delete(p.Name)
 				printLogWithColor(red, fmt.Sprintf("Pod %s has been deleted", p.Name))
 			}(pod)
 		}
-
-		wg.Wait()
 
 		if runningPods.Length() == 0 {
 			break
 		}
 	}
+
+	wg.Wait()
 }
 
 var m sync.Mutex
