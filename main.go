@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"time"
+	"sync"
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/pkg/api/v1"
@@ -56,6 +56,9 @@ func main() {
 	fmt.Printf("Labels:    %s\n", labels)
 	fmt.Println("======")
 
+	var m sync.Mutex
+	var wg sync.WaitGroup
+
 	for {
 		pods, err := clientset.Core().Pods(namespace).List(v1.ListOptions{
 			LabelSelector: labels,
@@ -65,7 +68,17 @@ func main() {
 			os.Exit(1)
 		}
 
-		fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
-		time.Sleep(10 * time.Second)
+		for _, p := range pods.Items {
+			wg.Add(1)
+			go func(pod v1.Pod) {
+				defer wg.Done()
+
+				m.Lock()
+				defer m.Unlock()
+				fmt.Println(pod.Name)
+			}(p)
+		}
+
+		wg.Wait()
 	}
 }
