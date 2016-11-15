@@ -34,17 +34,13 @@ func main() {
 	}
 
 	flags.StringVar(&kubeconfig, "kubeconfig", clientcmd.RecommendedHomeFile, fmt.Sprintf("Path of kubeconfig (Default: %s)", clientcmd.RecommendedHomeFile))
+	flags.StringVar(&labels, "labels", "", "Label filter query (Default: \"\")")
 	flags.StringVar(&namespace, "namespace", v1.NamespaceDefault, fmt.Sprintf("Kubernetes namespace (Default: %s)", v1.NamespaceDefault))
 	flags.BoolVar(&timestamps, "timestamps", false, "Include timestamps on each line (default: false)")
 
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
-	}
-
-	for 0 < flags.NArg() {
-		labels = flags.Args()[0]
-		flags.Parse(flags.Args()[1:])
 	}
 
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
