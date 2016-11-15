@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
+	"math"
 	"os"
 	"sync"
+	"time"
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/pkg/api/v1"
@@ -13,6 +16,11 @@ import (
 
 const (
 	defaultNamespace = "default"
+	logSecondsOffset = 10
+)
+
+var (
+	m sync.Mutex
 )
 
 func main() {
@@ -56,8 +64,9 @@ func main() {
 	fmt.Printf("Labels:    %s\n", labels)
 	fmt.Println("======")
 
-	var m sync.Mutex
 	var wg sync.WaitGroup
+
+	activePods := map[string]bool{}
 
 	for {
 		pods, err := clientset.Core().Pods(namespace).List(v1.ListOptions{
@@ -68,17 +77,47 @@ func main() {
 			os.Exit(1)
 		}
 
-		for _, p := range pods.Items {
+		for _, pod := range pods.Items {
+			if _, ok := activePods[pod.Name]; ok {
+				continue
+			}
+
+			activePods[pod.Name] = true
+			printLog(fmt.Sprintf("POD %s DETECTED", pod.Name))
+			sinceSeconds := int64(math.Ceil(float64(logSecondsOffset) / float64(time.Second)))
+
 			wg.Add(1)
-			go func(pod v1.Pod) {
+			go func(p v1.Pod) {
 				defer wg.Done()
 
-				m.Lock()
-				defer m.Unlock()
-				fmt.Println(pod.Name)
-			}(p)
+				rs, err := clientset.Core().Pods(namespace).GetLogs(p.Name, &v1.PodLogOptions{
+					Follow:       true,
+					SinceSeconds: &sinceSeconds,
+				}).Stream()
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+					os.Exit(1)
+				}
+
+				sc := bufio.NewScanner(rs)
+
+				for sc.Scan() {
+					printLog(fmt.Sprintf("[%s] %s", p.Name, sc.Text()))
+				}
+			}(pod)
 		}
 
 		wg.Wait()
+
+		if len(activePods) == 0 {
+			break
+		}
 	}
+}
+
+func printLog(line string) {
+	m.Lock()
+	defer m.Unlock()
+
+	fmt.Println(line)
 }
