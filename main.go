@@ -59,11 +59,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	c := color.New(color.Bold)
+	bold := color.New(color.Bold).SprintFunc()
 
-	c.Printf("Namespace: %s\n", namespace)
-	c.Printf("Labels:    %s\n", labels)
-	c.Println("======")
+	fmt.Printf("%s %s\n", bold("Namespace:"), namespace)
+	fmt.Printf("%s %s\n", bold("Labels:   "), labels)
+	color.New(color.Bold).Println("----------")
 
 	var wg sync.WaitGroup
 
