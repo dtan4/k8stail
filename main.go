@@ -65,10 +65,9 @@ func main() {
 	c.Printf("Labels:    %s\n", labels)
 	c.Println("======")
 
-	var mm sync.Mutex
 	var wg sync.WaitGroup
 
-	activePods := map[string]bool{}
+	runningPods := NewPodList()
 	green := color.New(color.FgGreen, color.Bold, color.Underline)
 	red := color.New(color.FgRed, color.Bold, color.Underline)
 
@@ -86,11 +85,11 @@ func main() {
 				continue
 			}
 
-			if _, ok := activePods[pod.Name]; ok {
+			if runningPods.Exists(pod.Name) {
 				continue
 			}
 
-			activePods[pod.Name] = true
+			runningPods.Add(pod.Name)
 			printLogWithColor(green, fmt.Sprintf("Pod %s has detected", pod.Name))
 			sinceSeconds := int64(math.Ceil(float64(logSecondsOffset) / float64(time.Second)))
 
@@ -114,16 +113,14 @@ func main() {
 					printLog(fmt.Sprintf("[%s] %s", p.Name, sc.Text()))
 				}
 
-				mm.Lock()
-				defer mm.Unlock()
-				delete(activePods, p.Name)
+				runningPods.Delete(p.Name)
 				printLogWithColor(red, fmt.Sprintf("Pod %s has been deleted", p.Name))
 			}(pod)
 		}
 
 		wg.Wait()
 
-		if len(activePods) == 0 {
+		if runningPods.Length() == 0 {
 			break
 		}
 	}
