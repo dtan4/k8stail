@@ -1,5 +1,5 @@
 hash: 5ae365258964ed012d958dfdb37ebff7ae468169ea7a9e001f79e2aa53786518
-updated: 2016-11-15T17:52:18.180878082+09:00
+updated: 2016-11-15T20:22:15.934854205+09:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -75,6 +75,10 @@ imports:
   - buffer
   - jlexer
   - jwriter
+- name: github.com/mattn/go-colorable
+  version: d228849504861217f796da67fae4f6e347643f15
+- name: github.com/mattn/go-isatty
+  version: 66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8
 - name: github.com/pborman/uuid
   version: ca53cad383cad2479bbba7f7a1a05797ec1386e4
 - name: github.com/PuerkitoBio/purell
