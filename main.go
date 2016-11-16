@@ -20,6 +20,10 @@ const (
 	logSecondsOffset = 10
 )
 
+var (
+	sinceSeconds = int64(math.Ceil(float64(logSecondsOffset) / float64(time.Second)))
+)
+
 func main() {
 	var (
 		kubeconfig string
@@ -97,8 +101,6 @@ func main() {
 			if pod.Status.Phase != v1.PodRunning {
 				continue
 			}
-
-			sinceSeconds := int64(math.Ceil(float64(logSecondsOffset) / float64(time.Second)))
 
 			for _, container := range pod.Spec.Containers {
 				if runningContainers.Exists(pod.Name, container.Name) {
