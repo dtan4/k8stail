@@ -1,3 +1,7 @@
+# [v0.2.1](https://github.com/dtan4/k8stail/releases/tag/v0.2.1) (2016-11-16)
+
+Rebuilt binaries to be statically-linked.
+
 # [v0.2.0](https://github.com/dtan4/k8stail/releases/tag/v0.2.0) (2016-11-16)
 
 ## Features
