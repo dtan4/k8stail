@@ -1,6 +1,7 @@
 # k8stail
 
 [![Build Status](https://travis-ci.org/dtan4/k8stail.svg?branch=master)](https://travis-ci.org/dtan4/k8stail)
+[![Docker Repository on Quay](https://quay.io/repository/dtan4/k8stail/status "Docker Repository on Quay")](https://quay.io/repository/dtan4/k8stail)
 
 `tail -f` experience for Kubernetes Pods
 
@@ -14,6 +15,7 @@ As you know, `kubectl logs` can stream only ONE pod at the same time. `k8stail` 
   + [Using Homebrew (OS X only)](#using-homebrew-os-x-only)
   + [Precompiled binary](#precompiled-binary)
   + [From source](#from-source)
+  + [Run in a Docker container](#run-in-a-docker-container)
 * [Usage](#usage)
   + [kubeconfig file](#kubeconfig-file)
   + [Options](#options)
@@ -43,6 +45,20 @@ $ go get -d github.com/dtan4/k8stail
 $ cd $GOPATH/src/github.com/dtan4/k8stail
 $ make deps
 $ make install
+```
+
+### Run in a Docker container
+
+Docker image is available at [quay.io/dtan4/k8stail](https://quay.io/repository/dtan4/k8stail).
+
+```bash
+# -t is required to colorize logs
+$ docker run \
+    --rm \
+    -t \
+    -v $HOME/.kube/config:/.kube/config \
+    quay.io/dtan4/k8stail:latest \
+      -kubeconfig=/.kube/config
 ```
 
 ## Usage
