@@ -113,6 +113,16 @@ $ k8stail -kubeconfig=/path/to/kubeconfig
 |`-h`, `-help`|Print command line usage|||
 |`-v`, `-version`|Print version|||
 
+## Development
+
+Clone this repository and build using `make`.
+
+```bash
+$ go get -d github.com/dtan4/k8stail
+$ cd $GOPATH/src/github.com/dtan4/k8stail
+$ make
+```
+
 ## Author
 
 Daisuke Fujita ([@dtan4](https://github.com/dtan4))
