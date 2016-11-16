@@ -107,8 +107,8 @@ func main() {
 					continue
 				}
 
-				runningContainers.Add(p.Name, c.Name)
-				logger.PrintColorizedLog(greenBold, fmt.Sprintf("Pod:%s Container:%s has been detected", p.Name, c.Name))
+				runningContainers.Add(pod.Name, container.Name)
+				logger.PrintColorizedLog(greenBold, fmt.Sprintf("Pod:%s Container:%s has been detected", pod.Name, container.Name))
 
 				wg.Add(1)
 				go func(p v1.Pod, c v1.Container) {
