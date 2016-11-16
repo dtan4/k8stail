@@ -6,6 +6,8 @@
 
 As you know, `kubectl logs` can stream only ONE pod at the same time. `k8stail` enables you to watch __log streams of ALL pods__ in the specified namespace or labels in real time, like `tail -f`.
 
+![example](_images/example.png)
+
 ## Installation
 
 ### Using Homebrew (OS X only)
