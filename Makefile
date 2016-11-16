@@ -1,5 +1,5 @@
 NAME      := k8stail
-VERSION   := v0.2.0
+VERSION   := v0.2.1
 REVISION  := $(shell git rev-parse --short HEAD)
 
 SRCS      := $(shell find . -name '*.go' -type f)
