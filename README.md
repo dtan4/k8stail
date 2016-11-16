@@ -30,7 +30,7 @@ $ make install
 Logs of all Pods in the specified namespace are streaming. When new Pod is added, logs of the Pod also appears.
 
 ```bash
-$ bin/k8stail -namespace awesome-app
+$ k8stail -namespace awesome-app
 Namespace: awesome-app
 Labels:
 ----------
@@ -50,7 +50,7 @@ With `-timestamps` option, log timestamp is printed together.
 
 
 ```bash
-$ bin/k8stail -namespace awesome-app -timestamps
+$ k8stail -namespace awesome-app -timestamps
 Namespace: awesome-app
 Labels:
 ----------
@@ -69,7 +69,7 @@ Pod awesome-app-web-4212725599-pvjsm has detected
 With `-labels` option, you can filter Pods to watch.
 
 ```bash
-$ bin/k8stail -namespace awesome-app -labels name=awesome-app-web
+$ k8stail -namespace awesome-app -labels name=awesome-app-web
 Namespace: awesome-app
 Labels:    name=awesome-app-web
 ----------
