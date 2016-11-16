@@ -85,6 +85,16 @@ Pod awesome-app-web-4212725599-pvjsm has detected
 [awesome-app-web-4212725599-zei9h]  | Migrating to CreatePosts (20160218082522)
 ```
 
+### kubeconfig file
+
+As default, `k8stail` use `~/.kube/config`. You can specify another path by `KUBECONFIG` environment variable or `-kubeconfig` option. `-kubeconfig` option always overrides `KUBECONFIG` environment variable.
+
+```bash
+$ KUBECONFIG=/path/to/kubeconfig k8stail
+# or
+$ k8stail -kubeconfig=/path/to/kubeconfig
+```
+
 ### Options
 
 |Option|Description|Required|Default|
