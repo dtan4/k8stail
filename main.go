@@ -109,10 +109,10 @@ func main() {
 
 				wg.Add(1)
 				go func(p v1.Pod, c v1.Container) {
+					defer wg.Done()
+
 					runningContainers.Add(p.Name, c.Name)
 					logger.PrintColorizedLog(greenBold, fmt.Sprintf("Pod:%s Container:%s has been detected", p.Name, c.Name))
-
-					defer wg.Done()
 
 					rs, err := clientset.Core().Pods(namespace).GetLogs(p.Name, &v1.PodLogOptions{
 						Container:    c.Name,
