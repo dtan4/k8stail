@@ -87,7 +87,7 @@ Pod awesome-app-web-4212725599-pvjsm has detected
 
 ### kubeconfig file
 
-As default, `k8stail` use `~/.kube/config`. You can specify another path by `KUBECONFIG` environment variable or `-kubeconfig` option. `-kubeconfig` option always overrides `KUBECONFIG` environment variable.
+`k8stail` use `~/.kube/config` as default. You can specify another path by `KUBECONFIG` environment variable or `-kubeconfig` option. `-kubeconfig` option always overrides `KUBECONFIG` environment variable.
 
 ```bash
 $ KUBECONFIG=/path/to/kubeconfig k8stail
