@@ -1,4 +1,4 @@
-# [v0.2.0](https://github.com/dtan4/s3url/releases/tag/v0.2.0) (2016-11-16)
+# [v0.2.0](https://github.com/dtan4/k8stail/releases/tag/v0.2.0) (2016-11-16)
 
 ## Features
 
