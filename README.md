@@ -8,6 +8,19 @@ As you know, `kubectl logs` can stream only ONE pod at the same time. `k8stail` 
 
 ![example](_images/example.png)
 
+## Table of Contents
+
+* [Installation](#installation)
+  + [Using Homebrew (OS X only)](#using-homebrew-os-x-only)
+  + [Precompiled binary](#precompiled-binary)
+  + [From source](#from-source)
+* [Usage](#usage)
+  + [kubeconfig file](#kubeconfig-file)
+  + [Options](#options)
+* [Development](#development)
+* [Author](#author)
+* [License](#license)
+
 ## Installation
 
 ### Using Homebrew (OS X only)
