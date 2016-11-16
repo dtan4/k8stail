@@ -93,6 +93,8 @@ Pod awesome-app-web-4212725599-pvjsm has detected
 |`-labels=LABELS`|Label filter query (e.g. `app=APP,role=ROLE`)|||
 |`-namespace=NAMESPACE`|Kubernetes namespace||`default`|
 |`-timestamps`|Include timestamps on each line||`false`|
+|`-h`, `-help`|Print command line usage|||
+|`-v`, `-version`|Print version|||
 
 ## Author
 

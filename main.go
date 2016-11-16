@@ -26,6 +26,7 @@ func main() {
 		labels     string
 		namespace  string
 		timestamps bool
+		version    bool
 	)
 
 	flags := flag.NewFlagSet("k8stail", flag.ExitOnError)
@@ -37,10 +38,17 @@ func main() {
 	flags.StringVar(&labels, "labels", "", "Label filter query (Default: \"\")")
 	flags.StringVar(&namespace, "namespace", v1.NamespaceDefault, fmt.Sprintf("Kubernetes namespace (Default: %s)", v1.NamespaceDefault))
 	flags.BoolVar(&timestamps, "timestamps", false, "Include timestamps on each line (default: false)")
+	flags.BoolVar(&version, "version", false, "Print version")
+	flags.BoolVar(&version, "v", false, "Print version")
 
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
+	}
+
+	if version {
+		printVersion()
+		os.Exit(0)
 	}
 
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
