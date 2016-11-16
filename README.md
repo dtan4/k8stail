@@ -27,7 +27,7 @@ $ make install
 
 ## Usage
 
-Logs of all Pods in the specified namespace are streaming. When new Pod is added, logs of the Pod also appears.
+Logs of all pods, all containers in pod in the specified namespace are streaming. When new pod is added, logs of the pod also appears.
 
 ```bash
 $ k8stail -namespace awesome-app
@@ -39,11 +39,11 @@ Pod awesome-app-web-4212725599-6pduy has detected
 Pod awesome-app-web-4212725599-lbuny has detected
 Pod awesome-app-web-4212725599-mh3g1 has detected
 Pod awesome-app-web-4212725599-pvjsm has detected
-[awesome-app-web-4212725599-mh3g1]  | creating base compositions...
-[awesome-app-web-4212725599-zei9h]  |    (47.1ms)  CREATE TABLE "schema_migrations" ("version" character varying NOT NULL)
-[awesome-app-web-4212725599-zei9h]  |    (45.1ms)  CREATE UNIQUE INDEX  "unique_schema_migrations" ON "schema_migrations"  ("version")
-[awesome-app-web-4212725599-zei9h]  |   ActiveRecord::SchemaMigration Load (1.8ms)  SELECT "schema_migrations".* FROM "schema_migrations"
-[awesome-app-web-4212725599-zei9h]  | Migrating to CreatePosts (20160218082522)
+[awesome-app-web-4212725599-mh3g1][web]  | creating base compositions...
+[awesome-app-web-4212725599-zei9h][web]  |    (47.1ms)  CREATE TABLE "schema_migrations" ("version" character varying NOT NULL)
+[awesome-app-web-4212725599-zei9h][web]  |    (45.1ms)  CREATE UNIQUE INDEX  "unique_schema_migrations" ON "schema_migrations"  ("version")
+[awesome-app-web-4212725599-zei9h][web]  |   ActiveRecord::SchemaMigration Load (1.8ms)  SELECT "schema_migrations".* FROM "schema_migrations"
+[awesome-app-web-4212725599-zei9h][web]  | Migrating to CreatePosts (20160218082522)
 ```
 
 With `-timestamps` option, log timestamp is printed together.
@@ -59,14 +59,14 @@ Pod awesome-app-web-4212725599-6pduy has detected
 Pod awesome-app-web-4212725599-lbuny has detected
 Pod awesome-app-web-4212725599-mh3g1 has detected
 Pod awesome-app-web-4212725599-pvjsm has detected
-[awesome-app-web-4212725599-mh3g1] 2016-11-15T10:57:22.178667425Z  | creating base compositions...
-[awesome-app-web-4212725599-zei9h] 2016-11-15T10:57:22.309011520Z  |    (47.1ms)  CREATE TABLE "schema_migrations" ("version" character varying NOT NULL)
-[awesome-app-web-4212725599-zei9h] 2016-11-15T10:57:22.309053601Z  |    (45.1ms)  CREATE UNIQUE INDEX  "unique_schema_migrations" ON "schema_migrations"  ("version")
-[awesome-app-web-4212725599-zei9h] 2016-11-15T10:57:22.463700110Z  |   ActiveRecord::SchemaMigration Load (1.8ms)  SELECT "schema_migrations".* FROM "schema_migrations"
-[awesome-app-web-4212725599-zei9h] 2016-11-15T10:57:22.463743373Z  | Migrating to CreatePosts (20160218082522)
+[awesome-app-web-4212725599-mh3g1][web] 2016-11-15T10:57:22.178667425Z  | creating base compositions...
+[awesome-app-web-4212725599-zei9h][web] 2016-11-15T10:57:22.309011520Z  |    (47.1ms)  CREATE TABLE "schema_migrations" ("version" character varying NOT NULL)
+[awesome-app-web-4212725599-zei9h][web] 2016-11-15T10:57:22.309053601Z  |    (45.1ms)  CREATE UNIQUE INDEX  "unique_schema_migrations" ON "schema_migrations"  ("version")
+[awesome-app-web-4212725599-zei9h][web] 2016-11-15T10:57:22.463700110Z  |   ActiveRecord::SchemaMigration Load (1.8ms)  SELECT "schema_migrations".* FROM "schema_migrations"
+[awesome-app-web-4212725599-zei9h][web] 2016-11-15T10:57:22.463743373Z  | Migrating to CreatePosts (20160218082522)
 ```
 
-With `-labels` option, you can filter Pods to watch.
+With `-labels` option, you can filter pods to watch.
 
 ```bash
 $ k8stail -namespace awesome-app -labels name=awesome-app-web
@@ -78,11 +78,11 @@ Pod awesome-app-web-4212725599-6pduy has detected
 Pod awesome-app-web-4212725599-lbuny has detected
 Pod awesome-app-web-4212725599-mh3g1 has detected
 Pod awesome-app-web-4212725599-pvjsm has detected
-[awesome-app-web-4212725599-mh3g1]  | creating base compositions...
-[awesome-app-web-4212725599-zei9h]  |    (47.1ms)  CREATE TABLE "schema_migrations" ("version" character varying NOT NULL)
-[awesome-app-web-4212725599-zei9h]  |    (45.1ms)  CREATE UNIQUE INDEX  "unique_schema_migrations" ON "schema_migrations"  ("version")
-[awesome-app-web-4212725599-zei9h]  |   ActiveRecord::SchemaMigration Load (1.8ms)  SELECT "schema_migrations".* FROM "schema_migrations"
-[awesome-app-web-4212725599-zei9h]  | Migrating to CreatePosts (20160218082522)
+[awesome-app-web-4212725599-mh3g1][web]  | creating base compositions...
+[awesome-app-web-4212725599-zei9h][web]  |    (47.1ms)  CREATE TABLE "schema_migrations" ("version" character varying NOT NULL)
+[awesome-app-web-4212725599-zei9h][web]  |    (45.1ms)  CREATE UNIQUE INDEX  "unique_schema_migrations" ON "schema_migrations"  ("version")
+[awesome-app-web-4212725599-zei9h][web]  |   ActiveRecord::SchemaMigration Load (1.8ms)  SELECT "schema_migrations".* FROM "schema_migrations"
+[awesome-app-web-4212725599-zei9h][web]  | Migrating to CreatePosts (20160218082522)
 ```
 
 ### kubeconfig file

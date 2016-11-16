@@ -79,7 +79,7 @@ func main() {
 
 	var wg sync.WaitGroup
 
-	runningPods := NewPodList()
+	runningContainers := NewContainerList()
 	greenBold := color.New(color.FgGreen, color.Bold)
 	redBold := color.New(color.FgRed, color.Bold)
 	logger := NewLogger()
@@ -98,39 +98,43 @@ func main() {
 				continue
 			}
 
-			if runningPods.Exists(pod.Name) {
-				continue
-			}
-
-			runningPods.Add(pod.Name)
-			logger.PrintColorizedLog(greenBold, fmt.Sprintf("Pod %s has detected", pod.Name))
 			sinceSeconds := int64(math.Ceil(float64(logSecondsOffset) / float64(time.Second)))
 
-			wg.Add(1)
-			go func(p v1.Pod) {
-				defer wg.Done()
-
-				rs, err := clientset.Core().Pods(namespace).GetLogs(p.Name, &v1.PodLogOptions{
-					Follow:       true,
-					SinceSeconds: &sinceSeconds,
-					Timestamps:   timestamps,
-				}).Stream()
-				if err != nil {
-					fmt.Fprintln(os.Stderr, err)
-					os.Exit(1)
+			for _, container := range pod.Spec.Containers {
+				if runningContainers.Exists(pod.Name, container.Name) {
+					continue
 				}
 
-				sc := bufio.NewScanner(rs)
+				wg.Add(1)
+				go func(p v1.Pod, c v1.Container) {
+					runningContainers.Add(p.Name, c.Name)
+					logger.PrintColorizedLog(greenBold, fmt.Sprintf("Pod:%s Container:%s has detected", p.Name, c.Name))
 
-				for sc.Scan() {
-					logger.PrintPodLog(p.Name, sc.Text(), timestamps)
-				}
+					defer wg.Done()
 
-				logger.PrintColorizedLog(redBold, fmt.Sprintf("Pod %s has been deleted", p.Name))
-			}(pod)
+					rs, err := clientset.Core().Pods(namespace).GetLogs(p.Name, &v1.PodLogOptions{
+						Container:    c.Name,
+						Follow:       true,
+						SinceSeconds: &sinceSeconds,
+						Timestamps:   timestamps,
+					}).Stream()
+					if err != nil {
+						fmt.Fprintln(os.Stderr, err)
+						os.Exit(1)
+					}
+
+					sc := bufio.NewScanner(rs)
+
+					for sc.Scan() {
+						logger.PrintPodLog(p.Name, c.Name, sc.Text(), timestamps)
+					}
+
+					logger.PrintColorizedLog(redBold, fmt.Sprintf("Pod:%s Container:%s has been deleted", p.Name, c.Name))
+				}(pod, container)
+			}
 		}
 
-		if runningPods.Length() == 0 {
+		if runningContainers.Length() == 0 {
 			break
 		}
 	}
