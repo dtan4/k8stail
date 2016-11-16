@@ -12,7 +12,12 @@ As you know, `kubectl logs` can stream only ONE pod at the same time. `k8stail` 
 
 ### Using Homebrew (OS X only)
 
-Preparing... :construction_worker:
+Formula is available at [dtan4/homebrew-dtan4](https://github.com/dtan4/homebrew-dtan4).
+
+```bash
+$ brew tap dtan4/dtan4
+$ brew install k8stail
+```
 
 ### Precompiled binary
 
