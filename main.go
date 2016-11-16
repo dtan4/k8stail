@@ -106,28 +106,31 @@ func main() {
 			logger.PrintColorizedLog(greenBold, fmt.Sprintf("Pod %s has detected", pod.Name))
 			sinceSeconds := int64(math.Ceil(float64(logSecondsOffset) / float64(time.Second)))
 
-			wg.Add(1)
-			go func(p v1.Pod) {
-				defer wg.Done()
+			for _, container := range pod.Spec.Containers {
+				wg.Add(1)
+				go func(p v1.Pod, c v1.Container) {
+					defer wg.Done()
 
-				rs, err := clientset.Core().Pods(namespace).GetLogs(p.Name, &v1.PodLogOptions{
-					Follow:       true,
-					SinceSeconds: &sinceSeconds,
-					Timestamps:   timestamps,
-				}).Stream()
-				if err != nil {
-					fmt.Fprintln(os.Stderr, err)
-					os.Exit(1)
-				}
+					rs, err := clientset.Core().Pods(namespace).GetLogs(p.Name, &v1.PodLogOptions{
+						Container:    c.Name,
+						Follow:       true,
+						SinceSeconds: &sinceSeconds,
+						Timestamps:   timestamps,
+					}).Stream()
+					if err != nil {
+						fmt.Fprintln(os.Stderr, err)
+						os.Exit(1)
+					}
 
-				sc := bufio.NewScanner(rs)
+					sc := bufio.NewScanner(rs)
 
-				for sc.Scan() {
-					logger.PrintPodLog(p.Name, sc.Text(), timestamps)
-				}
+					for sc.Scan() {
+						logger.PrintPodLog(p.Name, c.Name, sc.Text(), timestamps)
+					}
 
-				logger.PrintColorizedLog(redBold, fmt.Sprintf("Pod %s has been deleted", p.Name))
-			}(pod)
+					logger.PrintColorizedLog(redBold, fmt.Sprintf("Pod:%s Container:%s has been deleted", p.Name, c.Name))
+				}(pod, container)
+			}
 		}
 
 		if runningPods.Length() == 0 {

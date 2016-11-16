@@ -42,14 +42,14 @@ func (l *Logger) PrintPlainLog(line string) {
 }
 
 // PrintPodLog prints Pod log
-func (l *Logger) PrintPodLog(podName, line string, timestamps bool) {
+func (l *Logger) PrintPodLog(podName, containerName, line string, timestamps bool) {
 	l.m.Lock()
 	defer l.m.Unlock()
 
 	if timestamps {
 		ss := strings.SplitN(line, " ", 2)
-		fmt.Printf("[%s] %s  %s %s \n", boldFunc(podName), yellowFunc(ss[0]), boldFunc("|"), ss[1])
+		fmt.Printf("[%s][%s] %s  %s %s \n", boldFunc(podName), boldFunc(containerName), yellowFunc(ss[0]), boldFunc("|"), ss[1])
 	} else {
-		fmt.Printf("[%s]  %s %s\n", boldFunc(podName), boldFunc("|"), line)
+		fmt.Printf("[%s][%s]  %s %s\n", boldFunc(podName), boldFunc(containerName), boldFunc("|"), line)
 	}
 }
