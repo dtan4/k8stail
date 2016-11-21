@@ -64,6 +64,7 @@ $ docker run \
 ## Usage
 
 Logs of all pods, all containers in pod in the specified namespace are streaming. When new pod is added, logs of the pod also appears.
+To stop streaming and exit, press `Ctrl-C`.
 
 ```bash
 $ k8stail --namespace awesome-app
