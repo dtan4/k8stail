@@ -78,6 +78,7 @@ func main() {
 
 	fmt.Printf("%s %s\n", bold("Namespace:"), namespace)
 	fmt.Printf("%s %s\n", bold("Labels:   "), labels)
+	color.New(color.FgYellow).Println("Press Ctrl-C to exit.")
 	color.New(color.Bold).Println("----------")
 
 	var wg sync.WaitGroup
