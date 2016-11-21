@@ -66,7 +66,7 @@ $ docker run \
 Logs of all pods, all containers in pod in the specified namespace are streaming. When new pod is added, logs of the pod also appears.
 
 ```bash
-$ k8stail -namespace awesome-app
+$ k8stail --namespace awesome-app
 Namespace: awesome-app
 Labels:
 ----------
@@ -82,11 +82,11 @@ Pod awesome-app-web-4212725599-pvjsm has detected
 [awesome-app-web-4212725599-zei9h][web]  | Migrating to CreatePosts (20160218082522)
 ```
 
-With `-timestamps` option, log timestamp is printed together.
+With `--timestamps` option, log timestamp is printed together.
 
 
 ```bash
-$ k8stail -namespace awesome-app -timestamps
+$ k8stail --namespace awesome-app --timestamps
 Namespace: awesome-app
 Labels:
 ----------
@@ -102,10 +102,10 @@ Pod awesome-app-web-4212725599-pvjsm has detected
 [awesome-app-web-4212725599-zei9h][web] 2016-11-15T10:57:22.463743373Z  | Migrating to CreatePosts (20160218082522)
 ```
 
-With `-labels` option, you can filter pods to watch.
+With `--labels` option, you can filter pods to watch.
 
 ```bash
-$ k8stail -namespace awesome-app -labels name=awesome-app-web
+$ k8stail --namespace awesome-app --labels name=awesome-app-web
 Namespace: awesome-app
 Labels:    name=awesome-app-web
 ----------
@@ -123,22 +123,22 @@ Pod awesome-app-web-4212725599-pvjsm has detected
 
 ### kubeconfig file
 
-`k8stail` uses `~/.kube/config` as default. You can specify another path by `KUBECONFIG` environment variable or `-kubeconfig` option. `-kubeconfig` option always overrides `KUBECONFIG` environment variable.
+`k8stail` uses `~/.kube/config` as default. You can specify another path by `KUBECONFIG` environment variable or `--kubeconfig` option. `--kubeconfig` option always overrides `KUBECONFIG` environment variable.
 
 ```bash
 $ KUBECONFIG=/path/to/kubeconfig k8stail
 # or
-$ k8stail -kubeconfig=/path/to/kubeconfig
+$ k8stail --kubeconfig=/path/to/kubeconfig
 ```
 
 ### Options
 
 |Option|Description|Required|Default|
 |---------|-----------|-------|-------|
-|`-kubeconfig=KUBECONFIG`|Path of kubeconfig||`~/.kube/config`|
-|`-labels=LABELS`|Label filter query (e.g. `app=APP,role=ROLE`)|||
-|`-namespace=NAMESPACE`|Kubernetes namespace||`default`|
-|`-timestamps`|Include timestamps on each line||`false`|
+|`--kubeconfig=KUBECONFIG`|Path of kubeconfig||`~/.kube/config`|
+|`--labels=LABELS`|Label filter query (e.g. `app=APP,role=ROLE`)|||
+|`--namespace=NAMESPACE`|Kubernetes namespace||`default`|
+|`--timestamps`|Include timestamps on each line||`false`|
 |`-h`, `-help`|Print command line usage|||
 |`-v`, `-version`|Print version|||
 
