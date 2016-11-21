@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"math"
 	"os"
@@ -10,6 +9,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	flag "github.com/spf13/pflag"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/pkg/api/v1"
 	"k8s.io/client-go/tools/clientcmd"
@@ -42,8 +42,7 @@ func main() {
 	flags.StringVar(&labels, "labels", "", "Label filter query (Default: \"\")")
 	flags.StringVar(&namespace, "namespace", v1.NamespaceDefault, fmt.Sprintf("Kubernetes namespace (Default: %s)", v1.NamespaceDefault))
 	flags.BoolVar(&timestamps, "timestamps", false, "Include timestamps on each line (default: false)")
-	flags.BoolVar(&version, "version", false, "Print version")
-	flags.BoolVar(&version, "v", false, "Print version")
+	flags.BoolVarP(&version, "version", "v", false, "Print version")
 
 	if kubeconfig == "" {
 		if os.Getenv("KUBECONFIG") != "" {
