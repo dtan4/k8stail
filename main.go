@@ -38,10 +38,10 @@ func main() {
 		flags.PrintDefaults()
 	}
 
-	flags.StringVar(&kubeconfig, "kubeconfig", "", fmt.Sprintf("Path of kubeconfig (Default: %s)", clientcmd.RecommendedHomeFile))
-	flags.StringVar(&labels, "labels", "", "Label filter query (Default: \"\")")
-	flags.StringVar(&namespace, "namespace", v1.NamespaceDefault, fmt.Sprintf("Kubernetes namespace (Default: %s)", v1.NamespaceDefault))
-	flags.BoolVar(&timestamps, "timestamps", false, "Include timestamps on each line (default: false)")
+	flags.StringVar(&kubeconfig, "kubeconfig", "", "Path of kubeconfig")
+	flags.StringVar(&labels, "labels", "", "Label filter query")
+	flags.StringVar(&namespace, "namespace", v1.NamespaceDefault, "Kubernetes namespace")
+	flags.BoolVar(&timestamps, "timestamps", false, "Include timestamps on each line")
 	flags.BoolVarP(&version, "version", "v", false, "Print version")
 
 	if kubeconfig == "" {
