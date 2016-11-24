@@ -11,6 +11,7 @@ As you know, `kubectl logs` can stream only ONE pod at the same time. `k8stail` 
 
 ## Table of Contents
 
+* [Requirements](#requirements)
 * [Installation](#installation)
   + [Using Homebrew (OS X only)](#using-homebrew-os-x-only)
   + [Precompiled binary](#precompiled-binary)
@@ -22,6 +23,10 @@ As you know, `kubectl logs` can stream only ONE pod at the same time. `k8stail` 
 * [Development](#development)
 * [Author](#author)
 * [License](#license)
+
+## Requirements
+
+Kubernetes 1.3 or above
 
 ## Installation
 
