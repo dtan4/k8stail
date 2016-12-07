@@ -64,11 +64,11 @@ func main() {
 		os.Exit(0)
 	}
 
-	directClientConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+	clientConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
 		&clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig},
 		&clientcmd.ConfigOverrides{CurrentContext: context})
 
-	config, err := directClientConfig.ClientConfig()
+	config, err := clientConfig.ClientConfig()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
@@ -82,7 +82,7 @@ func main() {
 
 	bold := color.New(color.Bold).SprintFunc()
 
-	rawConfig, err := directClientConfig.RawConfig()
+	rawConfig, err := clientConfig.RawConfig()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
