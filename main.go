@@ -26,6 +26,7 @@ var (
 
 func main() {
 	var (
+		context    string
 		kubeconfig string
 		labels     string
 		namespace  string
@@ -38,6 +39,7 @@ func main() {
 		flags.PrintDefaults()
 	}
 
+	flags.StringVar(&context, "context", "", "Kubernetes context")
 	flags.StringVar(&kubeconfig, "kubeconfig", "", "Path of kubeconfig")
 	flags.StringVar(&labels, "labels", "", "Label filter query")
 	flags.StringVar(&namespace, "namespace", v1.NamespaceDefault, "Kubernetes namespace")
@@ -62,7 +64,11 @@ func main() {
 		os.Exit(0)
 	}
 
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+	clientConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+		&clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig},
+		&clientcmd.ConfigOverrides{CurrentContext: context})
+
+	config, err := clientConfig.ClientConfig()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
@@ -76,6 +82,13 @@ func main() {
 
 	bold := color.New(color.Bold).SprintFunc()
 
+	rawConfig, err := clientConfig.RawConfig()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("%s %s\n", bold("Context:  "), rawConfig.CurrentContext)
 	fmt.Printf("%s %s\n", bold("Namespace:"), namespace)
 	fmt.Printf("%s %s\n", bold("Labels:   "), labels)
 	color.New(color.FgYellow).Println("Press Ctrl-C to exit.")
