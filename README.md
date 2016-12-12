@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/dtan4/k8stail.svg?branch=master)](https://travis-ci.org/dtan4/k8stail)
 [![Docker Repository on Quay](https://quay.io/repository/dtan4/k8stail/status "Docker Repository on Quay")](https://quay.io/repository/dtan4/k8stail)
+[![GitHub release](https://img.shields.io/github/release/dtan4/k8stail.svg)](https://github.com/dtan4/k8stail/releases)
 
 `tail -f` experience for Kubernetes Pods
 
