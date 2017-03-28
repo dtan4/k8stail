@@ -146,6 +146,7 @@ $ k8stail --kubeconfig=/path/to/kubeconfig
 |`--kubeconfig=KUBECONFIG`|Path of kubeconfig||`~/.kube/config`|
 |`--labels=LABELS`|Label filter query (e.g. `app=APP,role=ROLE`)|||
 |`--namespace=NAMESPACE`|Kubernetes namespace||`default`|
+|`--no-halt`|Does not halt k8stail even if there is no pod||`false`|
 |`--timestamps`|Include timestamps on each line||`false`|
 |`-h`, `-help`|Print command line usage|||
 |`-v`, `-version`|Print version|||
