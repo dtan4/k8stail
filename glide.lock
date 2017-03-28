@@ -1,5 +1,5 @@
-hash: 46aa65e5ebd07851ebad76d4ca0803820a62c044a05adec2eccb4c6d03614465
-updated: 2016-11-21T15:37:27.804482039+09:00
+hash: 0a4bb9676ac5006406ffff5ff7758d76e1656a48886baa7be6d2d022a27c0d50
+updated: 2017-03-28T18:45:41.979752615+09:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -145,19 +145,20 @@ imports:
 - name: gopkg.in/yaml.v2
   version: 53feefa2559fb8dfa8d81baad31be332c97d6c77
 - name: k8s.io/client-go
-  version: b22087a53becae45931ed72d5e0f12e0031d771a
+  version: e121606b0d09b2e1c467183ee46217fa85a6b672
   subpackages:
   - discovery
   - kubernetes
-  - kubernetes/typed/apps/v1alpha1
+  - kubernetes/typed/apps/v1beta1
   - kubernetes/typed/authentication/v1beta1
   - kubernetes/typed/authorization/v1beta1
   - kubernetes/typed/autoscaling/v1
   - kubernetes/typed/batch/v1
+  - kubernetes/typed/batch/v2alpha1
   - kubernetes/typed/certificates/v1alpha1
   - kubernetes/typed/core/v1
   - kubernetes/typed/extensions/v1beta1
-  - kubernetes/typed/policy/v1alpha1
+  - kubernetes/typed/policy/v1beta1
   - kubernetes/typed/rbac/v1alpha1
   - kubernetes/typed/storage/v1beta1
   - pkg/api
@@ -174,7 +175,7 @@ imports:
   - pkg/apimachinery/registered
   - pkg/apis/apps
   - pkg/apis/apps/install
-  - pkg/apis/apps/v1alpha1
+  - pkg/apis/apps/v1beta1
   - pkg/apis/authentication
   - pkg/apis/authentication/install
   - pkg/apis/authentication/v1beta1
@@ -196,7 +197,7 @@ imports:
   - pkg/apis/extensions/v1beta1
   - pkg/apis/policy
   - pkg/apis/policy/install
-  - pkg/apis/policy/v1alpha1
+  - pkg/apis/policy/v1beta1
   - pkg/apis/rbac
   - pkg/apis/rbac/install
   - pkg/apis/rbac/v1alpha1
@@ -218,6 +219,7 @@ imports:
   - pkg/runtime/serializer/versioning
   - pkg/selection
   - pkg/third_party/forked/golang/reflect
+  - pkg/third_party/forked/golang/template
   - pkg/types
   - pkg/util
   - pkg/util/cert
@@ -229,6 +231,7 @@ imports:
   - pkg/util/integer
   - pkg/util/intstr
   - pkg/util/json
+  - pkg/util/jsonpath
   - pkg/util/labels
   - pkg/util/net
   - pkg/util/parsers
