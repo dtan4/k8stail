@@ -30,6 +30,7 @@ func main() {
 		kubeconfig string
 		labels     string
 		namespace  string
+		noHalt     bool
 		timestamps bool
 		version    bool
 	)
@@ -43,6 +44,7 @@ func main() {
 	flags.StringVar(&kubeconfig, "kubeconfig", "", "Path of kubeconfig")
 	flags.StringVar(&labels, "labels", "", "Label filter query")
 	flags.StringVar(&namespace, "namespace", v1.NamespaceDefault, "Kubernetes namespace")
+	flags.BoolVar(&noHalt, "no-halt", false, "Does not halt k8stail even if there is no pod")
 	flags.BoolVar(&timestamps, "timestamps", false, "Include timestamps on each line")
 	flags.BoolVarP(&version, "version", "v", false, "Print version")
 
@@ -149,7 +151,7 @@ func main() {
 			}
 		}
 
-		if runningContainers.Length() == 0 {
+		if runningContainers.Length() == 0 && !noHalt {
 			break
 		}
 	}
