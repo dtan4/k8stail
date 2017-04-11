@@ -43,7 +43,7 @@ func main() {
 	flags.StringVar(&context, "context", "", "Kubernetes context")
 	flags.StringVar(&kubeconfig, "kubeconfig", "", "Path of kubeconfig")
 	flags.StringVar(&labels, "labels", "", "Label filter query")
-	flags.StringVar(&namespace, "namespace", v1.NamespaceDefault, "Kubernetes namespace")
+	flags.StringVar(&namespace, "namespace", "", "Kubernetes namespace")
 	flags.BoolVar(&noHalt, "no-halt", false, "Does not halt k8stail even if there is no pod")
 	flags.BoolVar(&timestamps, "timestamps", false, "Include timestamps on each line")
 	flags.BoolVarP(&version, "version", "v", false, "Print version")
@@ -88,6 +88,14 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
+	}
+
+	if namespace == "" {
+		if rawConfig.Contexts[rawConfig.CurrentContext].Namespace == "" {
+			namespace = v1.NamespaceDefault
+		} else {
+			namespace = rawConfig.Contexts[rawConfig.CurrentContext].Namespace
+		}
 	}
 
 	fmt.Printf("%s %s\n", bold("Context:  "), rawConfig.CurrentContext)
