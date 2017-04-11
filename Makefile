@@ -1,5 +1,5 @@
 NAME      := k8stail
-VERSION   := v0.3.0
+VERSION   := v0.4.0
 REVISION  := $(shell git rev-parse --short HEAD)
 
 SRCS      := $(shell find . -name '*.go' -type f)
@@ -65,6 +65,11 @@ endif
 .PHONY: install
 install:
 	go install $(LDFLAGS)
+
+.PHONY: release
+release:
+	git tag $(VERSION)
+	git push origin $(VERSION)
 
 .PHONY: test
 test:
