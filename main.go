@@ -127,7 +127,10 @@ func main() {
 
 				wg.Add(1)
 				go func(p v1.Pod, c v1.Container) {
-					defer wg.Done()
+					defer func() {
+						runningContainers.Delete(p.Name, c.Name)
+						wg.Done()
+					}()
 
 					rs, err := clientset.Core().Pods(p.Namespace).GetLogs(p.Name, &v1.PodLogOptions{
 						Container:    c.Name,
