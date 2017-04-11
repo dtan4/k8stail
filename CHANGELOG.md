@@ -1,4 +1,15 @@
-# [v0.3.0](https://github.com/dtan4/k8stail/releases/tag/v0.2.1) (2016-12-12)
+# [v0.4.0](https://github.com/dtan4/k8stail/releases/tag/v0.4.0) (2017-04-11)
+
+## Features
+
+- Use default namespace set in kubecfg [#21](https://github.com/dtan4/k8stail/pull/21)
+- Add `--no-halt` flag [#18](https://github.com/dtan4/k8stail/pull/18)
+
+## Fixed
+
+- Detect container recreation [#20](https://github.com/dtan4/k8stail/pull/20)
+
+# [v0.3.0](https://github.com/dtan4/k8stail/releases/tag/v0.3.0) (2016-12-12)
 
 ## Backward incompatible changes
 
