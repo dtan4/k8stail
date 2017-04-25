@@ -152,6 +152,8 @@ $ k8stail --kubeconfig=/path/to/kubeconfig
 
 ## Development
 
+Go 1.7 or above is required.
+
 Clone this repository and build using `make`.
 
 ```bash
