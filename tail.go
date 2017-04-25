@@ -12,11 +12,13 @@ import (
 )
 
 var (
-	greenBold = color.New(color.FgGreen, color.Bold)
-	redBold   = color.New(color.FgRed, color.Bold)
+	greenBold  = color.New(color.FgGreen, color.Bold)
+	yellowBold = color.New(color.FgYellow, color.Bold)
+	redBold    = color.New(color.FgRed, color.Bold)
 )
 
 type Tail struct {
+	Finished     bool
 	closed       chan struct{}
 	logger       *Logger
 	namespace    string
@@ -29,6 +31,7 @@ type Tail struct {
 // NewTail creates new Tail object
 func NewTail(namespace, pod, container string, logger *Logger, sinceSeconds int64, timestamps bool) *Tail {
 	return &Tail{
+		Finished:     false,
 		closed:       make(chan struct{}),
 		logger:       logger,
 		namespace:    namespace,
@@ -74,8 +77,14 @@ func (t *Tail) Start(ctx context.Context, clientset *kubernetes.Clientset) {
 	}()
 }
 
-// Stop finishes Pod log streaming
-func (t *Tail) Stop() {
+// Finish finishes Pod log streaming with Pod completion
+func (t *Tail) Finish() {
+	t.logger.PrintColorizedLog(yellowBold, fmt.Sprintf("Pod:%s Container:%s has been finished", t.pod, t.container))
+	t.Finished = true
+}
+
+// Delete finishes Pod log streaming with Pod deletion
+func (t *Tail) Delete() {
 	t.logger.PrintColorizedLog(redBold, fmt.Sprintf("Pod:%s Container:%s has been deleted", t.pod, t.container))
 	close(t.closed)
 }

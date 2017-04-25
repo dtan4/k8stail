@@ -116,7 +116,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	added, deleted := Watch(ctx, watcher)
+	added, finished, deleted := Watch(ctx, watcher)
 
 	tails := map[string]*Tail{}
 
@@ -129,6 +129,22 @@ func main() {
 	}()
 
 	go func() {
+		for target := range finished {
+			id := target.GetID()
+
+			if tails[id] == nil {
+				continue
+			}
+
+			if tails[id].Finished {
+				continue
+			}
+
+			tails[id].Finish()
+		}
+	}()
+
+	go func() {
 		for target := range deleted {
 			id := target.GetID()
 
@@ -136,7 +152,7 @@ func main() {
 				continue
 			}
 
-			tails[id].Stop()
+			tails[id].Delete()
 			delete(tails, id)
 		}
 	}()

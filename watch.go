@@ -28,8 +28,9 @@ func (t *Target) GetID() string {
 }
 
 // Watch starts and listens Kubernetes Pod events
-func Watch(ctx context.Context, watcher watch.Interface) (chan *Target, chan *Target) {
+func Watch(ctx context.Context, watcher watch.Interface) (chan *Target, chan *Target, chan *Target) {
 	added := make(chan *Target)
+	finished := make(chan *Target)
 	deleted := make(chan *Target)
 
 	go func() {
@@ -50,12 +51,15 @@ func Watch(ctx context.Context, watcher watch.Interface) (chan *Target, chan *Ta
 				case watch.Modified:
 					pod := e.Object.(*v1.Pod)
 
-					if pod.Status.Phase != v1.PodRunning {
-						continue
-					}
-
-					for _, container := range pod.Spec.Containers {
-						added <- NewTarget(pod.Namespace, pod.Name, container.Name)
+					switch pod.Status.Phase {
+					case v1.PodRunning:
+						for _, container := range pod.Spec.Containers {
+							added <- NewTarget(pod.Namespace, pod.Name, container.Name)
+						}
+					case v1.PodSucceeded, v1.PodFailed:
+						for _, container := range pod.Spec.Containers {
+							finished <- NewTarget(pod.Namespace, pod.Name, container.Name)
+						}
 					}
 				case watch.Deleted:
 					pod := e.Object.(*v1.Pod)
@@ -72,5 +76,5 @@ func Watch(ctx context.Context, watcher watch.Interface) (chan *Target, chan *Ta
 		}
 	}()
 
-	return added, deleted
+	return added, finished, deleted
 }
