@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"os/signal"
 	"time"
 
 	flag "github.com/spf13/pflag"
@@ -92,6 +93,9 @@ func main() {
 		}
 	}
 
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, os.Interrupt)
+
 	logger := NewLogger()
 	logger.PrintHeader(rawConfig.CurrentContext, namespace, labels)
 
@@ -147,5 +151,6 @@ func main() {
 		}
 	}()
 
-	<-ctx.Done()
+	<-sigCh
+	cancel()
 }
