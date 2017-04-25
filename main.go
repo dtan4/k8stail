@@ -1,11 +1,11 @@
 package main
 
 import (
-	"bufio"
+	"context"
+	// "bufio"
 	"fmt"
 	"math"
 	"os"
-	"sync"
 	"time"
 
 	"github.com/fatih/color"
@@ -26,13 +26,13 @@ var (
 
 func main() {
 	var (
-		context    string
-		kubeconfig string
-		labels     string
-		namespace  string
-		noHalt     bool
-		timestamps bool
-		version    bool
+		kubeContext string
+		kubeconfig  string
+		labels      string
+		namespace   string
+		noHalt      bool
+		timestamps  bool
+		version     bool
 	)
 
 	flags := flag.NewFlagSet("k8stail", flag.ExitOnError)
@@ -40,7 +40,7 @@ func main() {
 		flags.PrintDefaults()
 	}
 
-	flags.StringVar(&context, "context", "", "Kubernetes context")
+	flags.StringVar(&kubeContext, "context", "", "Kubernetes context")
 	flags.StringVar(&kubeconfig, "kubeconfig", "", "Path of kubeconfig")
 	flags.StringVar(&labels, "labels", "", "Label filter query")
 	flags.StringVar(&namespace, "namespace", "", "Kubernetes namespace")
@@ -68,7 +68,7 @@ func main() {
 
 	clientConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
 		&clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig},
-		&clientcmd.ConfigOverrides{CurrentContext: context})
+		&clientcmd.ConfigOverrides{CurrentContext: kubeContext})
 
 	config, err := clientConfig.ClientConfig()
 	if err != nil {
@@ -104,68 +104,95 @@ func main() {
 	color.New(color.FgYellow).Println("Press Ctrl-C to exit.")
 	color.New(color.Bold).Println("----------")
 
-	var wg sync.WaitGroup
-
-	runningContainers := NewContainerList()
 	greenBold := color.New(color.FgGreen, color.Bold)
 	redBold := color.New(color.FgRed, color.Bold)
 	logger := NewLogger()
 
-	for {
-		pods, err := clientset.Core().Pods(namespace).List(v1.ListOptions{
-			LabelSelector: labels,
-		})
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-
-		for _, pod := range pods.Items {
-			if pod.Status.Phase != v1.PodRunning {
-				continue
-			}
-
-			for _, container := range pod.Spec.Containers {
-				if runningContainers.Exists(pod.Name, container.Name) {
-					continue
-				}
-
-				runningContainers.Add(pod.Name, container.Name)
-				logger.PrintColorizedLog(greenBold, fmt.Sprintf("Pod:%s Container:%s has been detected", pod.Name, container.Name))
-
-				wg.Add(1)
-				go func(p v1.Pod, c v1.Container) {
-					defer func() {
-						runningContainers.Delete(p.Name, c.Name)
-						wg.Done()
-					}()
-
-					rs, err := clientset.Core().Pods(p.Namespace).GetLogs(p.Name, &v1.PodLogOptions{
-						Container:    c.Name,
-						Follow:       true,
-						SinceSeconds: &sinceSeconds,
-						Timestamps:   timestamps,
-					}).Stream()
-					if err != nil {
-						fmt.Fprintln(os.Stderr, err)
-						os.Exit(1)
-					}
-
-					sc := bufio.NewScanner(rs)
-
-					for sc.Scan() {
-						logger.PrintPodLog(p.Name, c.Name, sc.Text(), timestamps)
-					}
-
-					logger.PrintColorizedLog(redBold, fmt.Sprintf("Pod:%s Container:%s has been deleted", p.Name, c.Name))
-				}(pod, container)
-			}
-		}
-
-		if runningContainers.Length() == 0 && !noHalt {
-			break
-		}
+	watcher, err := clientset.Core().Pods(namespace).Watch(v1.ListOptions{
+		LabelSelector: labels,
+	})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 
-	wg.Wait()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	added, deleted := Watch(ctx, watcher)
+
+	go func() {
+		for pod := range added {
+			for _, container := range pod.Spec.Containers {
+				logger.PrintColorizedLog(greenBold, fmt.Sprintf("Pod:%s Container:%s has been detected", pod.Name, container.Name))
+			}
+		}
+	}()
+
+	go func() {
+		for pod := range deleted {
+			for _, container := range pod.Spec.Containers {
+				logger.PrintColorizedLog(redBold, fmt.Sprintf("Pod:%s Container:%s has been deleted", pod.Name, container.Name))
+			}
+		}
+	}()
+
+	<-ctx.Done()
+
+	// for {
+	// 	pods, err := clientset.Core().Pods(namespace).List(v1.ListOptions{
+	// 		LabelSelector: labels,
+	// 	})
+	// 	if err != nil {
+	// 		fmt.Fprintln(os.Stderr, err)
+	// 		os.Exit(1)
+	// 	}
+
+	// 	for _, pod := range pods.Items {
+	// 		if pod.Status.Phase != v1.PodRunning {
+	// 			continue
+	// 		}
+
+	// 		for _, container := range pod.Spec.Containers {
+	// 			if runningContainers.Exists(pod.Name, container.Name) {
+	// 				continue
+	// 			}
+
+	// 			runningContainers.Add(pod.Name, container.Name)
+	// 			logger.PrintColorizedLog(greenBold, fmt.Sprintf("Pod:%s Container:%s has been detected", pod.Name, container.Name))
+
+	// 			wg.Add(1)
+	// 			go func(p v1.Pod, c v1.Container) {
+	// 				defer func() {
+	// 					runningContainers.Delete(p.Name, c.Name)
+	// 					logger.PrintColorizedLog(redBold, fmt.Sprintf("Pod:%s Container:%s has been deleted", p.Name, c.Name))
+	// 					wg.Done()
+	// 				}()
+
+	// 				rs, err := clientset.Core().Pods(p.Namespace).GetLogs(p.Name, &v1.PodLogOptions{
+	// 					Container:    c.Name,
+	// 					Follow:       true,
+	// 					SinceSeconds: &sinceSeconds,
+	// 					Timestamps:   timestamps,
+	// 				}).Stream()
+	// 				if err != nil {
+	// 					fmt.Fprintln(os.Stderr, err)
+	// 					os.Exit(1)
+	// 				}
+
+	// 				sc := bufio.NewScanner(rs)
+
+	// 				for sc.Scan() {
+	// 					logger.PrintPodLog(p.Name, c.Name, sc.Text(), timestamps)
+	// 				}
+	// 			}(pod, container)
+	// 		}
+	// 	}
+
+	// 	if runningContainers.Length() == 0 && !noHalt {
+	// 		break
+	// 	}
+	// }
+
+	// wg.Wait()
 }
