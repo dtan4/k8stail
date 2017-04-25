@@ -3,7 +3,7 @@ services:
   - docker
 language: go
 go:
-  - '1.7'
+  - '1.8'
 before_install:
   - sudo add-apt-repository ppa:masterminds/glide -y
   - sudo apt-get update -q
@@ -25,16 +25,13 @@ deploy:
     file: 'dist/*.{tar.gz,zip}'
     on:
       tags: true
-      go: '1.7'
   - provider: script
     skip_cleanup: true
     script: make ci-docker-release
     on:
       branch: master
-      go: '1.7'
   - provider: script
     skip_cleanup: true
     script: DOCKER_IMAGE_TAG=$TRAVIS_TAG make ci-docker-release
     on:
       tags: true
-      go: '1.7'
