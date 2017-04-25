@@ -40,9 +40,9 @@ func main() {
 
 	flags.StringVar(&kubeContext, "context", "", "Kubernetes context")
 	flags.StringVar(&kubeconfig, "kubeconfig", "", "Path of kubeconfig")
-	flags.StringVar(&labels, "labels", "", "Label filter query")
-	flags.StringVar(&namespace, "namespace", "", "Kubernetes namespace")
-	flags.BoolVar(&timestamps, "timestamps", false, "Include timestamps on each line")
+	flags.StringVarP(&labels, "labels", "l", "", "Label filter query")
+	flags.StringVarP(&namespace, "namespace", "n", "", "Kubernetes namespace")
+	flags.BoolVarP(&timestamps, "timestamps", "t", false, "Include timestamps on each line")
 	flags.BoolVarP(&version, "version", "v", false, "Print version")
 
 	if kubeconfig == "" {
