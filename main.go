@@ -45,17 +45,17 @@ func main() {
 	flags.BoolVarP(&timestamps, "timestamps", "t", false, "Include timestamps on each line")
 	flags.BoolVarP(&version, "version", "v", false, "Print version")
 
+	if err := flags.Parse(os.Args[1:]); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	if kubeconfig == "" {
 		if os.Getenv("KUBECONFIG") != "" {
 			kubeconfig = os.Getenv("KUBECONFIG")
 		} else {
 			kubeconfig = clientcmd.RecommendedHomeFile
 		}
-	}
-
-	if err := flags.Parse(os.Args[1:]); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
 	}
 
 	if version {
