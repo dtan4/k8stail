@@ -3,7 +3,7 @@
 ## Features
 
 - Watch Kubernetes events to detect Pod lifecycle correctly [#26](https://github.com/dtan4/k8stail/pull/26)
-- Add short flags [#25](https://github.com/dtan4/k8stail/pull/25) (thanks @atombender)
+- Add more short flags [#25](https://github.com/dtan4/k8stail/pull/25) (thanks @atombender)
 
 # [v0.4.0](https://github.com/dtan4/k8stail/releases/tag/v0.4.0) (2017-04-11)
 
