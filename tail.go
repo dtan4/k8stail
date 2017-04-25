@@ -6,15 +6,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/fatih/color"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/pkg/api/v1"
-)
-
-var (
-	greenBold  = color.New(color.FgGreen, color.Bold)
-	yellowBold = color.New(color.FgYellow, color.Bold)
-	redBold    = color.New(color.FgRed, color.Bold)
 )
 
 type Tail struct {
@@ -44,7 +37,7 @@ func NewTail(namespace, pod, container string, logger *Logger, sinceSeconds int6
 
 // Start starts Pod log streaming
 func (t *Tail) Start(ctx context.Context, clientset *kubernetes.Clientset) {
-	t.logger.PrintColorizedLog(greenBold, fmt.Sprintf("Pod:%s Container:%s has been detected", t.pod, t.container))
+	t.logger.PrintPodDetected(t.pod, t.container)
 
 	go func() {
 		rs, err := clientset.Core().Pods(t.namespace).GetLogs(t.pod, &v1.PodLogOptions{
@@ -79,12 +72,12 @@ func (t *Tail) Start(ctx context.Context, clientset *kubernetes.Clientset) {
 
 // Finish finishes Pod log streaming with Pod completion
 func (t *Tail) Finish() {
-	t.logger.PrintColorizedLog(yellowBold, fmt.Sprintf("Pod:%s Container:%s has been finished", t.pod, t.container))
+	t.logger.PrintPodFinished(t.pod, t.container)
 	t.Finished = true
 }
 
 // Delete finishes Pod log streaming with Pod deletion
 func (t *Tail) Delete() {
-	t.logger.PrintColorizedLog(redBold, fmt.Sprintf("Pod:%s Container:%s has been deleted", t.pod, t.container))
+	t.logger.PrintPodDeleted(t.pod, t.container)
 	close(t.closed)
 }

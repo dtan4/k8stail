@@ -7,7 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/fatih/color"
 	flag "github.com/spf13/pflag"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/pkg/api/v1"
@@ -79,8 +78,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	bold := color.New(color.Bold).SprintFunc()
-
 	rawConfig, err := clientConfig.RawConfig()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -95,13 +92,8 @@ func main() {
 		}
 	}
 
-	fmt.Printf("%s %s\n", bold("Context:  "), rawConfig.CurrentContext)
-	fmt.Printf("%s %s\n", bold("Namespace:"), namespace)
-	fmt.Printf("%s %s\n", bold("Labels:   "), labels)
-	color.New(color.FgYellow).Println("Press Ctrl-C to exit.")
-	color.New(color.Bold).Println("----------")
-
 	logger := NewLogger()
+	logger.PrintHeader(rawConfig.CurrentContext, namespace, labels)
 
 	watcher, err := clientset.Core().Pods(namespace).Watch(v1.ListOptions{
 		LabelSelector: labels,
