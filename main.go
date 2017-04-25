@@ -1,14 +1,13 @@
 package main
 
 import (
-	"bufio"
+	"context"
 	"fmt"
 	"math"
 	"os"
-	"sync"
+	"os/signal"
 	"time"
 
-	"github.com/fatih/color"
 	flag "github.com/spf13/pflag"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/pkg/api/v1"
@@ -26,13 +25,12 @@ var (
 
 func main() {
 	var (
-		context    string
-		kubeconfig string
-		labels     string
-		namespace  string
-		noHalt     bool
-		timestamps bool
-		version    bool
+		kubeContext string
+		kubeconfig  string
+		labels      string
+		namespace   string
+		timestamps  bool
+		version     bool
 	)
 
 	flags := flag.NewFlagSet("k8stail", flag.ExitOnError)
@@ -40,11 +38,10 @@ func main() {
 		flags.PrintDefaults()
 	}
 
-	flags.StringVar(&context, "context", "", "Kubernetes context")
+	flags.StringVar(&kubeContext, "context", "", "Kubernetes context")
 	flags.StringVar(&kubeconfig, "kubeconfig", "", "Path of kubeconfig")
 	flags.StringVarP(&labels, "labels", "l", "", "Label filter query")
 	flags.StringVarP(&namespace, "namespace", "n", "", "Kubernetes namespace")
-	flags.BoolVar(&noHalt, "no-halt", false, "Does not halt k8stail even if there is no pod")
 	flags.BoolVarP(&timestamps, "timestamps", "t", false, "Include timestamps on each line")
 	flags.BoolVarP(&version, "version", "v", false, "Print version")
 
@@ -68,7 +65,7 @@ func main() {
 
 	clientConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
 		&clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig},
-		&clientcmd.ConfigOverrides{CurrentContext: context})
+		&clientcmd.ConfigOverrides{CurrentContext: kubeContext})
 
 	config, err := clientConfig.ClientConfig()
 	if err != nil {
@@ -81,8 +78,6 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-
-	bold := color.New(color.Bold).SprintFunc()
 
 	rawConfig, err := clientConfig.RawConfig()
 	if err != nil {
@@ -98,74 +93,64 @@ func main() {
 		}
 	}
 
-	fmt.Printf("%s %s\n", bold("Context:  "), rawConfig.CurrentContext)
-	fmt.Printf("%s %s\n", bold("Namespace:"), namespace)
-	fmt.Printf("%s %s\n", bold("Labels:   "), labels)
-	color.New(color.FgYellow).Println("Press Ctrl-C to exit.")
-	color.New(color.Bold).Println("----------")
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, os.Interrupt)
 
-	var wg sync.WaitGroup
-
-	runningContainers := NewContainerList()
-	greenBold := color.New(color.FgGreen, color.Bold)
-	redBold := color.New(color.FgRed, color.Bold)
 	logger := NewLogger()
+	logger.PrintHeader(rawConfig.CurrentContext, namespace, labels)
 
-	for {
-		pods, err := clientset.Core().Pods(namespace).List(v1.ListOptions{
-			LabelSelector: labels,
-		})
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+	watcher, err := clientset.Core().Pods(namespace).Watch(v1.ListOptions{
+		LabelSelector: labels,
+	})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	added, finished, deleted := Watch(ctx, watcher)
+
+	tails := map[string]*Tail{}
+
+	go func() {
+		for target := range added {
+			tail := NewTail(target.Namespace, target.Pod, target.Container, logger, sinceSeconds, timestamps)
+			tails[target.GetID()] = tail
+			tail.Start(ctx, clientset)
 		}
+	}()
 
-		for _, pod := range pods.Items {
-			if pod.Status.Phase != v1.PodRunning {
+	go func() {
+		for target := range finished {
+			id := target.GetID()
+
+			if tails[id] == nil {
 				continue
 			}
 
-			for _, container := range pod.Spec.Containers {
-				if runningContainers.Exists(pod.Name, container.Name) {
-					continue
-				}
-
-				runningContainers.Add(pod.Name, container.Name)
-				logger.PrintColorizedLog(greenBold, fmt.Sprintf("Pod:%s Container:%s has been detected", pod.Name, container.Name))
-
-				wg.Add(1)
-				go func(p v1.Pod, c v1.Container) {
-					defer func() {
-						runningContainers.Delete(p.Name, c.Name)
-						wg.Done()
-					}()
-
-					rs, err := clientset.Core().Pods(p.Namespace).GetLogs(p.Name, &v1.PodLogOptions{
-						Container:    c.Name,
-						Follow:       true,
-						SinceSeconds: &sinceSeconds,
-						Timestamps:   timestamps,
-					}).Stream()
-					if err != nil {
-						fmt.Fprintln(os.Stderr, err)
-						os.Exit(1)
-					}
-
-					sc := bufio.NewScanner(rs)
-
-					for sc.Scan() {
-						logger.PrintPodLog(p.Name, c.Name, sc.Text(), timestamps)
-					}
-
-					logger.PrintColorizedLog(redBold, fmt.Sprintf("Pod:%s Container:%s has been deleted", p.Name, c.Name))
-				}(pod, container)
+			if tails[id].Finished {
+				continue
 			}
-		}
 
-		if runningContainers.Length() == 0 && !noHalt {
-			break
+			tails[id].Finish()
 		}
-	}
+	}()
 
-	wg.Wait()
+	go func() {
+		for target := range deleted {
+			id := target.GetID()
+
+			if tails[id] == nil {
+				continue
+			}
+
+			tails[id].Delete()
+			delete(tails, id)
+		}
+	}()
+
+	<-sigCh
+	cancel()
 }
