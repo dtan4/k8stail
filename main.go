@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	// "bufio"
 	"fmt"
 	"math"
 	"os"
@@ -104,8 +103,6 @@ func main() {
 	color.New(color.FgYellow).Println("Press Ctrl-C to exit.")
 	color.New(color.Bold).Println("----------")
 
-	greenBold := color.New(color.FgGreen, color.Bold)
-	redBold := color.New(color.FgRed, color.Bold)
 	logger := NewLogger()
 
 	watcher, err := clientset.Core().Pods(namespace).Watch(v1.ListOptions{
@@ -121,78 +118,28 @@ func main() {
 
 	added, deleted := Watch(ctx, watcher)
 
+	tails := map[string]*Tail{}
+
 	go func() {
-		for pod := range added {
-			for _, container := range pod.Spec.Containers {
-				logger.PrintColorizedLog(greenBold, fmt.Sprintf("Pod:%s Container:%s has been detected", pod.Name, container.Name))
-			}
+		for target := range added {
+			tail := NewTail(target.Namespace, target.Pod, target.Container, logger, sinceSeconds, timestamps)
+			tails[target.GetID()] = tail
+			tail.Start(ctx, clientset)
 		}
 	}()
 
 	go func() {
-		for pod := range deleted {
-			for _, container := range pod.Spec.Containers {
-				logger.PrintColorizedLog(redBold, fmt.Sprintf("Pod:%s Container:%s has been deleted", pod.Name, container.Name))
+		for target := range deleted {
+			id := target.GetID()
+
+			if tails[id] == nil {
+				continue
 			}
+
+			tails[id].Stop()
+			delete(tails, id)
 		}
 	}()
 
 	<-ctx.Done()
-
-	// for {
-	// 	pods, err := clientset.Core().Pods(namespace).List(v1.ListOptions{
-	// 		LabelSelector: labels,
-	// 	})
-	// 	if err != nil {
-	// 		fmt.Fprintln(os.Stderr, err)
-	// 		os.Exit(1)
-	// 	}
-
-	// 	for _, pod := range pods.Items {
-	// 		if pod.Status.Phase != v1.PodRunning {
-	// 			continue
-	// 		}
-
-	// 		for _, container := range pod.Spec.Containers {
-	// 			if runningContainers.Exists(pod.Name, container.Name) {
-	// 				continue
-	// 			}
-
-	// 			runningContainers.Add(pod.Name, container.Name)
-	// 			logger.PrintColorizedLog(greenBold, fmt.Sprintf("Pod:%s Container:%s has been detected", pod.Name, container.Name))
-
-	// 			wg.Add(1)
-	// 			go func(p v1.Pod, c v1.Container) {
-	// 				defer func() {
-	// 					runningContainers.Delete(p.Name, c.Name)
-	// 					logger.PrintColorizedLog(redBold, fmt.Sprintf("Pod:%s Container:%s has been deleted", p.Name, c.Name))
-	// 					wg.Done()
-	// 				}()
-
-	// 				rs, err := clientset.Core().Pods(p.Namespace).GetLogs(p.Name, &v1.PodLogOptions{
-	// 					Container:    c.Name,
-	// 					Follow:       true,
-	// 					SinceSeconds: &sinceSeconds,
-	// 					Timestamps:   timestamps,
-	// 				}).Stream()
-	// 				if err != nil {
-	// 					fmt.Fprintln(os.Stderr, err)
-	// 					os.Exit(1)
-	// 				}
-
-	// 				sc := bufio.NewScanner(rs)
-
-	// 				for sc.Scan() {
-	// 					logger.PrintPodLog(p.Name, c.Name, sc.Text(), timestamps)
-	// 				}
-	// 			}(pod, container)
-	// 		}
-	// 	}
-
-	// 	if runningContainers.Length() == 0 && !noHalt {
-	// 		break
-	// 	}
-	// }
-
-	// wg.Wait()
 }
