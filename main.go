@@ -85,11 +85,19 @@ func main() {
 		os.Exit(1)
 	}
 
+	var currentContext string
+
+	if kubeContext == "" {
+		currentContext = rawConfig.CurrentContext
+	} else {
+		currentContext = kubeContext
+	}
+
 	if namespace == "" {
-		if rawConfig.Contexts[rawConfig.CurrentContext].Namespace == "" {
+		if rawConfig.Contexts[currentContext].Namespace == "" {
 			namespace = v1.NamespaceDefault
 		} else {
-			namespace = rawConfig.Contexts[rawConfig.CurrentContext].Namespace
+			namespace = rawConfig.Contexts[currentContext].Namespace
 		}
 	}
 
@@ -97,7 +105,7 @@ func main() {
 	signal.Notify(sigCh, os.Interrupt)
 
 	logger := NewLogger()
-	logger.PrintHeader(rawConfig.CurrentContext, namespace, labels)
+	logger.PrintHeader(currentContext, namespace, labels)
 
 	watcher, err := clientset.Core().Pods(namespace).Watch(v1.ListOptions{
 		LabelSelector: labels,
