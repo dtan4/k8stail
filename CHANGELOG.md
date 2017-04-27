@@ -1,3 +1,9 @@
+# [v0.5.1](https://github.com/dtan4/k8stail/releases/tag/v0.5.1) (2017-04-27)
+
+## Fixed
+
+- Print selected context correctly [#28](https://github.com/dtan4/k8stail/pull/28)
+
 # [v0.5.0](https://github.com/dtan4/k8stail/releases/tag/v0.5.0) (2017-04-25)
 
 ## Features
