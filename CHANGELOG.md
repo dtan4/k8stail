@@ -1,3 +1,13 @@
+# [v0.5.2.rc1](https://github.com/dtan4/k8stail/releases/tag/v0.5.2.rc1) (2017-04-27)
+
+## Features
+
+- Add debug flag to enable pprof [#31](https://github.com/dtan4/k8stail/pull/31)
+
+## Fixed
+
+- Close goroutine immediately if there is no valid object [#30](https://github.com/dtan4/k8stail/pull/30)
+
 # [v0.5.1](https://github.com/dtan4/k8stail/releases/tag/v0.5.1) (2017-04-27)
 
 ## Fixed
