@@ -143,6 +143,7 @@ $ k8stail --kubeconfig=/path/to/kubeconfig
 |Option|Description|Required|Default|
 |---------|-----------|-------|-------|
 |`--context=CONTEXT`|Kubernetes context|||
+|`--debug`|Debug mode using pprof (http://localhost:6060)||`false`|
 |`--kubeconfig=KUBECONFIG`|Path of kubeconfig||`~/.kube/config`|
 |`--labels=LABELS`|Label filter query (e.g. `app=APP,role=ROLE`)|||
 |`--namespace=NAMESPACE`|Kubernetes namespace||`default`|
