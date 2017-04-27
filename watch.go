@@ -37,10 +37,14 @@ func Watch(ctx context.Context, watcher watch.Interface) (chan *Target, chan *Ta
 		for {
 			select {
 			case e := <-watcher.ResultChan():
+				if e.Object == nil {
+					return
+				}
+
+				pod := e.Object.(*v1.Pod)
+
 				switch e.Type {
 				case watch.Added:
-					pod := e.Object.(*v1.Pod)
-
 					if pod.Status.Phase != v1.PodRunning {
 						continue
 					}
@@ -49,8 +53,6 @@ func Watch(ctx context.Context, watcher watch.Interface) (chan *Target, chan *Ta
 						added <- NewTarget(pod.Namespace, pod.Name, container.Name)
 					}
 				case watch.Modified:
-					pod := e.Object.(*v1.Pod)
-
 					switch pod.Status.Phase {
 					case v1.PodRunning:
 						for _, container := range pod.Spec.Containers {
@@ -62,8 +64,6 @@ func Watch(ctx context.Context, watcher watch.Interface) (chan *Target, chan *Ta
 						}
 					}
 				case watch.Deleted:
-					pod := e.Object.(*v1.Pod)
-
 					for _, container := range pod.Spec.Containers {
 						deleted <- NewTarget(pod.Namespace, pod.Name, container.Name)
 					}
