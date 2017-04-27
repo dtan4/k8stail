@@ -3,7 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"math"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"time"
@@ -15,6 +18,7 @@ import (
 )
 
 const (
+	debugAddress     = ":6060"
 	defaultNamespace = "default"
 	logSecondsOffset = 10
 )
@@ -25,6 +29,7 @@ var (
 
 func main() {
 	var (
+		debug       bool
 		kubeContext string
 		kubeconfig  string
 		labels      string
@@ -39,6 +44,7 @@ func main() {
 	}
 
 	flags.StringVar(&kubeContext, "context", "", "Kubernetes context")
+	flags.BoolVar(&debug, "debug", false, "Debug mode using pprof (http://localhost:6060)")
 	flags.StringVar(&kubeconfig, "kubeconfig", "", "Path of kubeconfig")
 	flags.StringVarP(&labels, "labels", "l", "", "Label filter query")
 	flags.StringVarP(&namespace, "namespace", "n", "", "Kubernetes namespace")
@@ -61,6 +67,12 @@ func main() {
 	if version {
 		printVersion()
 		os.Exit(0)
+	}
+
+	if debug {
+		go func() {
+			log.Println(http.ListenAndServe(debugAddress, nil))
+		}()
 	}
 
 	clientConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
