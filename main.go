@@ -19,7 +19,6 @@ import (
 
 const (
 	debugAddress     = ":6060"
-	defaultNamespace = "default"
 	logSecondsOffset = 10
 )
 
