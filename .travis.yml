@@ -2,6 +2,9 @@ sudo: required
 services:
   - docker
 language: go
+cache:
+  directories:
+    - vendor
 go:
   - '1.9.x'
 install:
