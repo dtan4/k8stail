@@ -3,7 +3,7 @@ services:
   - docker
 language: go
 go:
-  - '1.8'
+  - '1.9.x'
 before_install:
   - sudo add-apt-repository ppa:masterminds/glide -y
   - sudo apt-get update -q
