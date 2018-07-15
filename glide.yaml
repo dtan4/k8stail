@@ -1,0 +1,10 @@
+package: github.com/dtan4/k8stail
+import:
+- package: github.com/fatih/color
+- package: github.com/spf13/pflag
+- package: k8s.io/client-go
+  subpackages:
+  - kubernetes
+  - pkg/api/v1
+  - pkg/watch
+  - tools/clientcmd
