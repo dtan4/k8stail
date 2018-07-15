@@ -36,15 +36,9 @@ cross-build: deps
 		done; \
 	done
 
-.PHONY: dep
-dep:
-ifeq ($(shell command -v dep 2> /dev/null),)
-	go get -u github.com/golang/dep/cmd/dep
-endif
-
 .PHONY: deps
-deps: dep
-	dep ensure -v
+deps: glide
+	glide install
 
 .PHONY: dist
 dist:
@@ -62,6 +56,12 @@ ifeq ($(findstring ELF 64-bit LSB,$(shell file bin/$(NAME) 2> /dev/null)),)
 	@exit 1
 endif
 	docker build -t $(DOCKER_IMAGE) .
+
+.PHONY: glide
+glide:
+ifeq ($(shell command -v glide 2> /dev/null),)
+	go get -u github.com/Masterminds/glide
+endif
 
 .PHONY: install
 install:
