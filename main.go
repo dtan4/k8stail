@@ -12,8 +12,8 @@ import (
 	"time"
 
 	flag "github.com/spf13/pflag"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/pkg/api/v1"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -106,7 +106,7 @@ func main() {
 
 	if namespace == "" {
 		if rawConfig.Contexts[currentContext].Namespace == "" {
-			namespace = v1.NamespaceDefault
+			namespace = metav1.NamespaceDefault
 		} else {
 			namespace = rawConfig.Contexts[currentContext].Namespace
 		}
@@ -118,7 +118,7 @@ func main() {
 	logger := NewLogger()
 	logger.PrintHeader(currentContext, namespace, labels)
 
-	watcher, err := clientset.Core().Pods(namespace).Watch(v1.ListOptions{
+	watcher, err := clientset.Core().Pods(namespace).Watch(metav1.ListOptions{
 		LabelSelector: labels,
 	})
 	if err != nil {
