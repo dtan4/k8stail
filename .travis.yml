@@ -6,7 +6,7 @@ cache:
   directories:
     - vendor
 go:
-  - '1.9.x'
+  - '1.10.3'
 install:
   - make deps
 script:
