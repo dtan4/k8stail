@@ -1,3 +1,14 @@
+# [v0.6.0](https://github.com/dtan4/k8stail/releases/tag/v0.6.0) (2018-07-29)
+
+## Features
+
+- Enable external auth provider [#40](https://github.com/dtan4/k8stail/pull/40)
+
+## Others
+
+- Use Go 1.10.3 on Travis CI [#42](https://github.com/dtan4/k8stail/pull/42)
+- Upgrade to client-go 8.0.0 [#39](https://github.com/dtan4/k8stail/pull/39)
+
 # [v0.5.2.rc1](https://github.com/dtan4/k8stail/releases/tag/v0.5.2.rc1) (2017-04-27)
 
 ## Features
