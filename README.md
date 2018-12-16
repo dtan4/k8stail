@@ -150,6 +150,7 @@ $ k8stail --kubeconfig=/path/to/kubeconfig
 |`--timestamps`|Include timestamps on each line||`false`|
 |`-h`, `-help`|Print command line usage|||
 |`-v`, `-version`|Print version|||
+|`-e`, `--exclude-container`|Exclude container names (can specify multiple or separate values with commas: name1,name2)|||
 
 ## Development
 

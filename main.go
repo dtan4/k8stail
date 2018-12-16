@@ -52,16 +52,15 @@ func (c *containerNames) Contains(value string) bool {
 	return false
 }
 
-
 func main() {
 	var (
-		debug       bool
-		kubeContext string
-		kubeconfig  string
-		labels      string
-		namespace   string
-		timestamps  bool
-		version     bool
+		debug            bool
+		kubeContext      string
+		kubeconfig       string
+		labels           string
+		namespace        string
+		timestamps       bool
+		version          bool
 		excludeContainer []string
 	)
 
@@ -79,7 +78,7 @@ func main() {
 	flags.BoolVarP(&version, "version", "v", false, "Print version")
 	flags.StringSliceVarP(
 		&excludeContainer, "exclude-container", "e", []string{},
-		"Exclude containers name (can specify multiple or separate values with commas: name1,name2)")
+		"Exclude container names (can specify multiple or separate values with commas: name1,name2)")
 
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		fmt.Fprintln(os.Stderr, err)
