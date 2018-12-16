@@ -40,7 +40,7 @@ func (t *Tail) Start(ctx context.Context, clientset *kubernetes.Clientset) {
 	t.logger.PrintPodDetected(t.pod, t.container)
 
 	go func() {
-		rs, err := clientset.Core().Pods(t.namespace).GetLogs(t.pod, &v1.PodLogOptions{
+		rs, err := clientset.CoreV1().Pods(t.namespace).GetLogs(t.pod, &v1.PodLogOptions{
 			Container:    t.container,
 			Follow:       true,
 			SinceSeconds: &t.sinceSeconds,
