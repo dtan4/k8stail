@@ -119,7 +119,7 @@ func main() {
 	logger := NewLogger()
 	logger.PrintHeader(currentContext, namespace, labels)
 
-	watcher, err := clientset.Core().Pods(namespace).Watch(metav1.ListOptions{
+	watcher, err := clientset.CoreV1().Pods(namespace).Watch(metav1.ListOptions{
 		LabelSelector: labels,
 	})
 	if err != nil {
