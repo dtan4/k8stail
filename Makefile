@@ -4,7 +4,6 @@ REVISION  := $(shell git rev-parse --short HEAD)
 
 SRCS      := $(shell find . -name '*.go' -type f)
 LDFLAGS   := -ldflags="-s -w -X \"main.Version=$(VERSION)\" -X \"main.Revision=$(REVISION)\""
-NOVENDOR  := $(shell go list ./... | grep -v vendor)
 
 DIST_DIRS := find * -type d -exec
 
@@ -14,6 +13,8 @@ DOCKER_IMAGE_TAG  ?= latest
 DOCKER_IMAGE      := $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)
 
 .DEFAULT_GOAL := bin/$(NAME)
+
+export GO111MODULE=on
 
 bin/$(NAME): $(SRCS)
 	go build $(LDFLAGS) -o bin/$(NAME)
@@ -26,19 +27,14 @@ ci-docker-release: docker-build
 .PHONY: clean
 clean:
 	rm -rf bin/*
-	rm -rf vendor/*
 
 .PHONY: cross-build
-cross-build: deps
+cross-build:
 	for os in darwin linux windows; do \
 		for arch in amd64 386; do \
 			GOOS=$$os GOARCH=$$arch CGO_ENABLED=0 go build $(LDFLAGS) -o dist/$$os-$$arch/$(NAME); \
 		done; \
 	done
-
-.PHONY: deps
-deps: glide
-	glide install
 
 .PHONY: dist
 dist:
@@ -53,12 +49,6 @@ dist:
 docker-build:
 	docker build -t $(DOCKER_IMAGE) .
 
-.PHONY: glide
-glide:
-ifeq ($(shell command -v glide 2> /dev/null),)
-	go get -u github.com/Masterminds/glide
-endif
-
 .PHONY: install
 install:
 	go install $(LDFLAGS)
@@ -70,4 +60,4 @@ release:
 
 .PHONY: test
 test:
-	go test -cover -v $(NOVENDOR)
+	go test -cover -v
