@@ -2,13 +2,8 @@ sudo: required
 services:
   - docker
 language: go
-cache:
-  directories:
-    - vendor
 go:
-  - '1.10.3'
-install:
-  - make deps
+  - '1.12'
 script:
   - make test
 before_deploy:

@@ -1,13 +1,11 @@
-FROM golang:1.10.3 AS builder
+FROM golang:1.12 AS builder
 
 WORKDIR /go/src/github.com/dtan4/k8stail
 COPY . /go/src/github.com/dtan4/k8stail
 
-RUN make deps
-
 RUN CGO_ENABLED=0 make
 
-FROM alpine:3.8
+FROM alpine:3.9
 
 RUN apk add --no-cache --update ca-certificates
 
