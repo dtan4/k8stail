@@ -136,8 +136,14 @@ func main() {
 
 	go func() {
 		for target := range added {
+			id := target.GetID()
+
+			if _, ok := tails[id]; ok {
+				continue
+			}
+
 			tail := NewTail(target.Namespace, target.Pod, target.Container, logger, sinceSeconds, timestamps)
-			tails[target.GetID()] = tail
+			tails[id] = tail
 			tail.Start(ctx, clientset)
 		}
 	}()
