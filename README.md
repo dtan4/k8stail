@@ -2,6 +2,7 @@
 
 [![GitHub Actions](https://github.com/dtan4/k8stail/workflows/Test/badge.svg)](https://github.com/dtan4/k8stail/actions?query=workflow%3ATest+branch%3Amaster)
 [![Build Status](https://travis-ci.org/dtan4/k8stail.svg?branch=master)](https://travis-ci.org/dtan4/k8stail)
+[![codecov](https://codecov.io/gh/dtan4/k8stail/branch/master/graph/badge.svg)](https://codecov.io/gh/dtan4/k8stail)
 [![Docker Repository on Quay](https://quay.io/repository/dtan4/k8stail/status "Docker Repository on Quay")](https://quay.io/repository/dtan4/k8stail)
 [![GitHub release](https://img.shields.io/github/release/dtan4/k8stail.svg)](https://github.com/dtan4/k8stail/releases)
 
