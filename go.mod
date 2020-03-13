@@ -6,7 +6,7 @@ require (
 	contrib.go.opencensus.io/exporter/ocagent v0.5.0 // indirect
 	github.com/Azure/go-autorest v12.0.0+incompatible // indirect
 	github.com/dgrijalva/jwt-go v0.0.0-20160705203006-01aeca54ebda // indirect
-	github.com/fatih/color v1.3.0
+	github.com/fatih/color v1.9.0
 	github.com/gogo/protobuf v0.0.0-20170330071051-c0656edd0d9e // indirect
 	github.com/google/gofuzz v0.0.0-20161122191042-44d81051d367 // indirect
 	github.com/googleapis/gnostic v0.0.0-20170729233727-0c5108395e2d // indirect
