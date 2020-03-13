@@ -1,6 +1,6 @@
 module github.com/dtan4/k8stail
 
-go 1.12
+go 1.14
 
 require (
 	contrib.go.opencensus.io/exporter/ocagent v0.5.0 // indirect

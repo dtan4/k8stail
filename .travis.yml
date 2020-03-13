@@ -3,7 +3,7 @@ services:
   - docker
 language: go
 go:
-  - '1.12'
+  - '1.14'
 script:
   - make test
 before_deploy:
