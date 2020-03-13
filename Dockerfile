@@ -1,4 +1,4 @@
-FROM golang:1.12 AS builder
+FROM golang:1.14 AS builder
 
 WORKDIR /go/src/github.com/dtan4/k8stail
 COPY . /go/src/github.com/dtan4/k8stail
