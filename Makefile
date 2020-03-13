@@ -19,6 +19,10 @@ export GO111MODULE=on
 bin/$(NAME): $(SRCS)
 	go build $(LDFLAGS) -o bin/$(NAME)
 
+.PHONY: ci-test
+ci-test:
+	go test -coverpkg=./... -coverprofile=coverage.txt -v ./...
+
 .PHONY: ci-docker-release
 ci-docker-release: docker-build
 	@docker login -u="$(DOCKER_QUAY_USERNAME)" -p="$(DOCKER_QUAY_PASSWORD)" $(DOCKER_REPOSITORY)
