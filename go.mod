@@ -13,8 +13,6 @@ require (
 	github.com/gophercloud/gophercloud v0.0.0-20180330165814-781450b3c4fc // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/json-iterator/go v0.0.0-20180701071628-ab8a2e0c74be // indirect
-	github.com/mattn/go-colorable v0.0.7 // indirect
-	github.com/mattn/go-isatty v0.0.0-20160806122752-66b8e73f3f5c // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v0.0.0-20180320133207-05fbef0ca5da // indirect
 	github.com/spf13/pflag v0.0.0-20160915153101-c7e63cf4530b
