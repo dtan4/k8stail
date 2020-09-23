@@ -9,6 +9,7 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 
 	flag "github.com/spf13/pflag"
@@ -27,15 +28,40 @@ var (
 	sinceSeconds = int64(math.Ceil(float64(logSecondsOffset) / float64(time.Second)))
 )
 
+type containerNames []string
+
+func (c *containerNames) String() string {
+	return "[" + strings.Join(*c, ", ") + "]"
+}
+
+func (c *containerNames) Type() string {
+	return "containerNames"
+}
+
+func (c *containerNames) Set(value string) error {
+	*c = append(*c, value)
+	return nil
+}
+
+func (c *containerNames) Contains(value string) bool {
+	for _, n := range *c {
+		if value == n {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 	var (
-		debug       bool
-		kubeContext string
-		kubeconfig  string
-		labels      string
-		namespace   string
-		timestamps  bool
-		version     bool
+		debug            bool
+		kubeContext      string
+		kubeconfig       string
+		labels           string
+		namespace        string
+		timestamps       bool
+		version          bool
+		excludeContainer []string
 	)
 
 	flags := flag.NewFlagSet("k8stail", flag.ExitOnError)
@@ -50,6 +76,9 @@ func main() {
 	flags.StringVarP(&namespace, "namespace", "n", "", "Kubernetes namespace")
 	flags.BoolVarP(&timestamps, "timestamps", "t", false, "Include timestamps on each line")
 	flags.BoolVarP(&version, "version", "v", false, "Print version")
+	flags.StringSliceVarP(
+		&excludeContainer, "exclude-container", "e", []string{},
+		"Exclude container names (can specify multiple or separate values with commas: name1,name2)")
 
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -130,7 +159,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	added, finished, deleted := Watch(ctx, watcher)
+	added, finished, deleted := Watch(ctx, watcher, excludeContainer)
 
 	tails := map[string]*Tail{}
 

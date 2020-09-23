@@ -27,8 +27,17 @@ func (t *Target) GetID() string {
 	return t.Namespace + "_" + t.Pod + "_" + t.Container
 }
 
+func Contains(a containerNames, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
+}
+
 // Watch starts and listens Kubernetes Pod events
-func Watch(ctx context.Context, watcher watch.Interface) (chan *Target, chan *Target, chan *Target) {
+func Watch(ctx context.Context, watcher watch.Interface, excludeContainers containerNames) (chan *Target, chan *Target, chan *Target) {
 	added := make(chan *Target)
 	finished := make(chan *Target)
 	deleted := make(chan *Target)
@@ -50,22 +59,30 @@ func Watch(ctx context.Context, watcher watch.Interface) (chan *Target, chan *Ta
 					}
 
 					for _, container := range pod.Spec.Containers {
-						added <- NewTarget(pod.Namespace, pod.Name, container.Name)
+						if !excludeContainers.Contains(container.Name) {
+							added <- NewTarget(pod.Namespace, pod.Name, container.Name)
+						}
 					}
 				case watch.Modified:
 					switch pod.Status.Phase {
 					case v1.PodRunning:
 						for _, container := range pod.Spec.Containers {
-							added <- NewTarget(pod.Namespace, pod.Name, container.Name)
+							if !excludeContainers.Contains(container.Name) {
+								added <- NewTarget(pod.Namespace, pod.Name, container.Name)
+							}
 						}
 					case v1.PodSucceeded, v1.PodFailed:
 						for _, container := range pod.Spec.Containers {
-							finished <- NewTarget(pod.Namespace, pod.Name, container.Name)
+							if !excludeContainers.Contains(container.Name) {
+								finished <- NewTarget(pod.Namespace, pod.Name, container.Name)
+							}
 						}
 					}
 				case watch.Deleted:
 					for _, container := range pod.Spec.Containers {
-						deleted <- NewTarget(pod.Namespace, pod.Name, container.Name)
+						if !excludeContainers.Contains(container.Name) {
+							deleted <- NewTarget(pod.Namespace, pod.Name, container.Name)
+						}
 					}
 				}
 
