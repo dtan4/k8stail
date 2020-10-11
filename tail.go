@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -45,7 +45,7 @@ func (t *Tail) Start(ctx context.Context, clientset *kubernetes.Clientset) {
 			Follow:       true,
 			SinceSeconds: &t.sinceSeconds,
 			Timestamps:   t.timestamps,
-		}).Stream()
+		}).Stream(ctx)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			return

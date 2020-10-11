@@ -119,16 +119,16 @@ func main() {
 	logger := NewLogger()
 	logger.PrintHeader(currentContext, namespace, labels)
 
-	watcher, err := clientset.CoreV1().Pods(namespace).Watch(metav1.ListOptions{
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	watcher, err := clientset.CoreV1().Pods(namespace).Watch(ctx, metav1.ListOptions{
 		LabelSelector: labels,
 	})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	added, finished, deleted := Watch(ctx, watcher)
 
