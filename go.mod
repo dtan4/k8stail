@@ -7,6 +7,6 @@ require (
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/spf13/pflag v1.0.5
 	k8s.io/api v0.21.1
-	k8s.io/apimachinery v0.21.1
+	k8s.io/apimachinery v0.22.4
 	k8s.io/client-go v0.21.1
 )
