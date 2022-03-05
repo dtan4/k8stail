@@ -3,7 +3,6 @@
 [![GitHub Actions](https://github.com/dtan4/k8stail/workflows/Test/badge.svg)](https://github.com/dtan4/k8stail/actions?query=workflow%3ATest+branch%3Amaster)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=dtan4/k8stail)](https://dependabot.com)
 [![codecov](https://codecov.io/gh/dtan4/k8stail/branch/master/graph/badge.svg)](https://codecov.io/gh/dtan4/k8stail)
-[![Docker Repository on Quay](https://quay.io/repository/dtan4/k8stail/status "Docker Repository on Quay")](https://quay.io/repository/dtan4/k8stail)
 [![GitHub release](https://img.shields.io/github/release/dtan4/k8stail.svg)](https://github.com/dtan4/k8stail/releases)
 
 `tail -f` experience for Kubernetes Pods
@@ -57,16 +56,11 @@ $ make install
 
 ### Run in a Docker container
 
-Docker image is available at [quay.io/dtan4/k8stail](https://quay.io/repository/dtan4/k8stail).
+Docker image is no longer provided officially.
+If you'd like to run k8sec in Docker image, see [`Dockerfile`](Dockerfile) and build image by yourself.
 
 ```bash
-# -t is required to colorize logs
-$ docker run \
-    --rm \
-    -t \
-    -v $HOME/.kube/config:/.kube/config \
-    quay.io/dtan4/k8stail:latest \
-      -kubeconfig=/.kube/config
+docker build -t k8stail .
 ```
 
 ## Usage
