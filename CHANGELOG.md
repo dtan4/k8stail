@@ -1,3 +1,8 @@
+# [v0.7.0](https://github.com/dtan4/k8stail/releases/tag/v0.7.0) (2022-03-05)
+
+- Go 1.17
+- Update dependencies
+
 # [v0.6.0](https://github.com/dtan4/k8stail/releases/tag/v0.6.0) (2018-07-29)
 
 ## Features
