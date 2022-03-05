@@ -5,7 +5,9 @@ before:
     - make clean
     - go mod tidy
 builds:
-- env:
+- ldflags:
+  - "-s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}"
+  env:
   - CGO_ENABLED=0
   goos:
   - darwin
@@ -30,7 +32,7 @@ archives:
 release:
   prerelease: auto
 brews:
-- github:
+- tap:
     owner: dtan4
     name: homebrew-tools
   folder: Formula
