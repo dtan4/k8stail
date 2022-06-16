@@ -132,18 +132,18 @@ func main() {
 
 	added, finished, deleted := Watch(ctx, watcher)
 
-	tails := map[string]*Tail{}
+	tails := NewTailMap()
 
 	go func() {
 		for target := range added {
 			id := target.GetID()
 
-			if _, ok := tails[id]; ok {
+			if _, ok := tails.Get(id); ok {
 				continue
 			}
 
 			tail := NewTail(target.Namespace, target.Pod, target.Container, logger, sinceSeconds, timestamps)
-			tails[id] = tail
+			tails.Set(id, tail)
 			tail.Start(ctx, clientset)
 		}
 	}()
@@ -152,15 +152,18 @@ func main() {
 		for target := range finished {
 			id := target.GetID()
 
-			if tails[id] == nil {
+			t, ok := tails.Get(id)
+			if !ok {
 				continue
 			}
 
-			if tails[id].Finished {
+			if t.Finished {
 				continue
 			}
 
-			tails[id].Finish()
+			t.Finish()
+
+			tails.Delete(id)
 		}
 	}()
 
@@ -168,12 +171,14 @@ func main() {
 		for target := range deleted {
 			id := target.GetID()
 
-			if tails[id] == nil {
+			t, ok := tails.Get(id)
+			if !ok {
 				continue
 			}
 
-			tails[id].Delete()
-			delete(tails, id)
+			t.Delete()
+
+			tails.Delete(id)
 		}
 	}()
 

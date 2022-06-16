@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sync"
 
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
@@ -80,4 +81,39 @@ func (t *Tail) Finish() {
 func (t *Tail) Delete() {
 	t.logger.PrintPodDeleted(t.pod, t.container)
 	close(t.closed)
+}
+
+type TailMap struct {
+	mu sync.Mutex
+
+	data map[string]*Tail
+}
+
+func NewTailMap() *TailMap {
+	return &TailMap{
+		data: make(map[string]*Tail),
+	}
+}
+
+func (m *TailMap) Get(k string) (*Tail, bool) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	d, ok := m.data[k]
+
+	return d, ok
+}
+
+func (m *TailMap) Set(k string, v *Tail) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	m.data[k] = v
+}
+
+func (m *TailMap) Delete(k string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	delete(m.data, k)
 }
