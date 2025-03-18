@@ -5,9 +5,9 @@ go 1.24.1
 require (
 	github.com/fatih/color v1.18.0
 	github.com/spf13/pflag v1.0.6
-	k8s.io/api v0.32.2
-	k8s.io/apimachinery v0.32.2
-	k8s.io/client-go v0.32.2
+	k8s.io/api v0.32.3
+	k8s.io/apimachinery v0.32.3
+	k8s.io/client-go v0.32.3
 )
 
 require (
