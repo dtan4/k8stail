@@ -9,6 +9,7 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 
 	flag "github.com/spf13/pflag"
@@ -75,8 +76,10 @@ func main() {
 		}()
 	}
 
+	kubeConfigPaths := strings.Split(kubeconfig, ":")
+
 	clientConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
-		&clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig},
+		&clientcmd.ClientConfigLoadingRules{Precedence: kubeConfigPaths},
 		&clientcmd.ConfigOverrides{CurrentContext: kubeContext})
 
 	config, err := clientConfig.ClientConfig()
