@@ -1,6 +1,6 @@
 module github.com/dtan4/k8stail
 
-go 1.26.1
+go 1.26.2
 
 require (
 	github.com/fatih/color v1.19.0
