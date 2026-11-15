@@ -123,6 +123,20 @@ Pod awesome-app-web-4212725599-pvjsm has detected
 [awesome-app-web-4212725599-zei9h][web]  | Migrating to CreatePosts (20160218082522)
 ```
 
+With `--exclude-pods` option, you can skip Pods whose names match the given regular expression.
+
+```bash
+$ k8stail --namespace awesome-app --exclude-pods '^awesome-app-web-'
+Context:   minikube
+Namespace: awesome-app
+Labels:
+Exclude:   ^awesome-app-web-
+----------
+Pod:awesome-app-worker-3145216674-6pqrj Container:worker has been detected
+Pod:awesome-app-worker-3145216674-8xtmk Container:worker has been detected
+[awesome-app-worker-3145216674-6pqrj][worker]  | processing background job...
+```
+
 ### kubeconfig file
 
 `k8stail` uses `~/.kube/config` as default. You can specify another path by `KUBECONFIG` environment variable or `--kubeconfig` option. `--kubeconfig` option always overrides `KUBECONFIG` environment variable.
@@ -139,6 +153,7 @@ $ k8stail --kubeconfig=/path/to/kubeconfig
 |---------|-----------|-------|-------|
 |`--context=CONTEXT`|Kubernetes context|||
 |`--debug`|Debug mode using pprof (http://localhost:6060)||`false`|
+|`-e`, `--exclude-pods=REGEXP`|Regular expression of Pod names to exclude (e.g. `^my-job-`)|||
 |`--kubeconfig=KUBECONFIG`|Path of kubeconfig||`~/.kube/config`|
 |`--labels=LABELS`|Label filter query (e.g. `app=APP,role=ROLE`)|||
 |`--namespace=NAMESPACE`|Kubernetes namespace||`default`|
