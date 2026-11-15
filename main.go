@@ -30,6 +30,7 @@ var (
 func main() {
 	var (
 		debug       bool
+		excludePods string
 		kubeContext string
 		kubeconfig  string
 		labels      string
@@ -45,6 +46,7 @@ func main() {
 
 	flags.StringVar(&kubeContext, "context", "", "Kubernetes context")
 	flags.BoolVar(&debug, "debug", false, "Debug mode using pprof (http://localhost:6060)")
+	flags.StringVarP(&excludePods, "exclude-pods", "e", "", "Regular expression of Pod names to exclude (e.g. '^my-job-')")
 	flags.StringVar(&kubeconfig, "kubeconfig", "", "Path of kubeconfig")
 	flags.StringVarP(&labels, "labels", "l", "", "Label filter query")
 	flags.StringVarP(&namespace, "namespace", "n", "", "Kubernetes namespace")
@@ -116,8 +118,14 @@ func main() {
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt)
 
+	excludePodsPattern, err := NewPodExcluder(excludePods)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	logger := NewLogger()
-	logger.PrintHeader(currentContext, namespace, labels)
+	logger.PrintHeader(currentContext, namespace, labels, excludePods)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -130,7 +138,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	added, finished, deleted := Watch(ctx, watcher)
+	added, finished, deleted := Watch(ctx, watcher, excludePodsPattern)
 
 	tails := NewTailMap()
 

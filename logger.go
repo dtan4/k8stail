@@ -37,10 +37,13 @@ func (l *Logger) PrintColorizedLog(c *color.Color, line string) {
 }
 
 // PrintHeader prints header
-func (l *Logger) PrintHeader(context, namespace, labels string) {
+func (l *Logger) PrintHeader(context, namespace, labels, excludePods string) {
 	fmt.Printf("%s %s\n", boldFunc("Context:  "), context)
 	fmt.Printf("%s %s\n", boldFunc("Namespace:"), namespace)
 	fmt.Printf("%s %s\n", boldFunc("Labels:   "), labels)
+	if excludePods != "" {
+		fmt.Printf("%s %s\n", boldFunc("Exclude:  "), excludePods)
+	}
 	color.New(color.FgYellow).Println("Press Ctrl-C to exit.")
 	color.New(color.Bold).Println("----------")
 }
